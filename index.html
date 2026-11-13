@@ -761,13 +761,15 @@
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = 'madina-eng-training-global-unified-portal-2026';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSySecurePlaceholderKeyForMadinaInstitute",
-            authDomain: "madina-institute.firebaseapp.com",
-            projectId: "madina-institute-db",
-            storageBucket: "madina-institute.appspot.com",
-            messagingSenderId: "123456789",
-            appId: appId
+        
+        // REPLACE THIS OBJECT WITH YOUR ACTUAL FIREBASE CONFIG FROM STEP 1
+        const firebaseConfig = {
+            apiKey: "YOUR_REAL_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         let app, db, auth, userId = null;
