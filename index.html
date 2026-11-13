@@ -41,7 +41,6 @@
             from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        /* ضبط الطباعة لتكون في صفحة واحدة فقط بدون صفحات إضافية */
         @media print {
             body * {
                 visibility: hidden;
@@ -79,15 +78,9 @@
     <header class="bg-navy-900 text-white shadow-lg border-b-4 border-gold-500 sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
             <div class="flex items-center space-x-3 space-x-reverse">
-                <!-- Dynamic Logo Container -->
-                <div class="relative group cursor-pointer" onclick="document.getElementById('logo-upload-input').click()" title="انقر لتغيير شعار المعهد">
-                    <div id="logo-preview-container" class="w-12 h-12 bg-white rounded-xl p-1 flex items-center justify-center shadow-md overflow-hidden border-2 border-gold-400">
-                        <img id="institute-logo-img" src="input_file_0.png" alt="شعار معهد المدينة العالي للهندسة والتكنولوجيا" class="w-full h-full object-contain">
-                    </div>
-                    <div class="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs transition">
-                        <i class="fa-solid fa-camera"></i>
-                    </div>
-                    <input type="file" id="logo-upload-input" class="hidden" accept="image/*" onchange="handleLogoUpload(event)">
+                <!-- Static Unchangeable Logo Container -->
+                <div class="w-12 h-12 bg-white rounded-xl p-1 flex items-center justify-center shadow-md overflow-hidden border-2 border-gold-400">
+                    <img id="institute-logo-img" src="input_file_0.png" alt="شعار معهد المدينة العالي للهندسة والتكنولوجيا" class="w-full h-full object-contain">
                 </div>
                 <div>
                     <h1 class="text-sm md:text-base font-bold tracking-wide">معهد المدينة العالي للهندسة والتكنولوجيا</h1>
@@ -167,7 +160,7 @@
                     <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
             </div>
-            <p class="text-sm text-slate-600 mb-4">أدخل الرقم السري الجديد الخاص بلوحة التحكم:</p>
+            <p class="text-sm text-slate-600 mb-4">أدخل الرقم السري الجديد الخاص بلوحة التحكم (سيتم تحديثه في قاعدة البيانات السحابية):</p>
             <form onsubmit="handlePasswordChange(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">الرقم السري الجديد</label>
@@ -175,7 +168,7 @@
                 </div>
                 <div class="flex gap-2 pt-2">
                     <button type="submit" class="flex-1 bg-navy-900 hover:bg-navy-800 text-white font-bold py-3 rounded-xl transition shadow">
-                        حفظ التغيير
+                        حفظ التغيير في القاعدة
                     </button>
                     <button type="button" onclick="closeChangePasswordModal()" class="px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 rounded-xl transition">
                         إلغاء
@@ -433,7 +426,7 @@
                     </button>
                 </div>
                 
-                <!-- Official Header with Institute Logo -->
+                <!-- Official Header with Fixed Institute Logo -->
                 <div class="border-b-4 border-gold-500 pb-5 mb-6">
                     <div class="flex justify-between items-center">
                         <div class="text-right text-xs font-bold text-navy-900 leading-relaxed">
@@ -441,7 +434,7 @@
                             <span class="text-[10px] text-slate-600 font-normal">طريق سقارة السياحى – المريوطية – الهرم – جيزة</span>
                         </div>
                         <div class="w-20 h-20 bg-white border-2 border-gold-500 rounded-2xl p-1 flex items-center justify-center shadow-md overflow-hidden">
-                            <img src="" id="print-institute-logo" alt="شعار معهد المدينة" class="w-full h-full object-contain">
+                            <img src="input_file_0.png" id="print-institute-logo" alt="شعار معهد المدينة" class="w-full h-full object-contain">
                         </div>
                         <div class="text-left text-xs font-bold text-navy-900 leading-relaxed">
                             لجنة التدريب الصيفي<br>الخط الساخن: <span class="text-gold-600">19203</span><br>البريد: Eng@madinagroups.edu.eg<br>
@@ -510,7 +503,7 @@
                     </div>
                     <div class="w-28 h-28 border-4 border-dashed border-gold-500 rounded-full flex flex-col items-center justify-center p-2 text-center relative bg-gold-50/30 shadow-inner">
                         <div class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
-                            <img src="" id="print-seal-logo" class="w-20 h-20 object-contain">
+                            <img src="input_file_0.png" class="w-20 h-20 object-contain">
                         </div>
                         <span class="text-[10px] text-navy-900 font-black z-10">خاتم المعهد الرسمي</span>
                         <span class="text-[8px] text-slate-600 z-10">شؤون الطلاب</span>
@@ -754,29 +747,26 @@
         <p class="text-slate-500 text-[11px] pt-1">جميع الحقوق محفوظة © 2026 - وحدة التدريب الصيفي والبحث العلمي</p>
     </footer>
 
-    <!-- JavaScript Application Core with Robust Local & Cloud Sync -->
+    <!-- JavaScript Application Core with Database-Managed Admin Password & Fixed Logo -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = 'madina-eng-training-global-unified-portal-2026';
-        
-        // REPLACE THIS OBJECT WITH YOUR ACTUAL FIREBASE CONFIG FROM STEP 1
-        const firebaseConfig = {
-            apiKey: "AIzaSyDHZhorns5jLmxG_wXZgpJ8Z-qLiWCcCig",
-            authDomain: "madinatrainingportal.firebaseapp.com",
-            projectId: "madinatrainingportal",
-            storageBucket: "madinatrainingportal.firebasestorage.app",
-            messagingSenderId: "56742457166",
-            appId: "1:56742457166:web:a75e12750d5196369b381f"
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSySecurePlaceholderKeyForMadinaInstitute",
+            authDomain: "madina-institute.firebaseapp.com",
+            projectId: "madina-institute-db",
+            storageBucket: "madina-institute.appspot.com",
+            messagingSenderId: "123456789",
+            appId: appId
         };
 
         let app, db, auth, userId = null;
         let appData = {
-            adminPassword: "1234",
+            adminPassword: "1234", // Default initial database password (can be updated in admin panel)
             isAdminLoggedIn: false,
-            logoUrl: "https://placehold.co/70x70/1e3a8a/fbbf24?text=LOGO",
             companies: [
                 { id: "1", name: "شركة المقاولون العرب (عثمان أحمد عثمان)", field: "الهندسة المدنية والإنشاءات", seats: 35, perks: "تدريب ميداني بمشاريع قومية كبرى + شهادة معتمدة" },
                 { id: "2", name: "شركة فالكون لأنظمة الاتصالات والشبكات", field: "هندسة الإلكترونيات والإتصالات الكهربية", seats: 20, perks: "تدريب عملي على السنترالات وشبكات الفايبر + مكافأة" },
@@ -790,20 +780,6 @@
         };
 
         window.addEventListener('DOMContentLoaded', async () => {
-            // تحميل البيانات المحفوظة محلياً كضمان تشغيل فوري وآمن
-            const localSaved = localStorage.getItem('madina_unified_app_data_v2');
-            if (localSaved) {
-                try {
-                    const parsed = JSON.parse(localSaved);
-                    appData.companies = parsed.companies || appData.companies;
-                    appData.trainings = parsed.trainings || appData.trainings;
-                    appData.requests = parsed.requests || appData.requests;
-                    appData.announcements = parsed.announcements || appData.announcements;
-                    if (parsed.adminPassword) appData.adminPassword = parsed.adminPassword;
-                    if (parsed.logoUrl) appData.logoUrl = parsed.logoUrl;
-                } catch(e) { console.error(e); }
-            }
-
             try {
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
@@ -811,18 +787,9 @@
                 await signInAnonymously(auth);
                 userId = auth.currentUser?.uid || crypto.randomUUID();
                 
-                // محاولة المزامنة السحابية الحية في حال توفر الصلاحيات
                 initGlobalCloudSync();
             } catch (err) {
-                console.warn("Running in robust local storage mode due to cloud permissions.");
-            }
-
-            const savedLogo = localStorage.getItem('madina_logo_secure');
-            if (savedLogo) {
-                appData.logoUrl = savedLogo;
-            }
-            if(document.getElementById('institute-logo-img')) {
-                document.getElementById('institute-logo-img').src = appData.logoUrl;
+                console.warn("Running in local mode.");
             }
 
             renderCompanies();
@@ -840,37 +807,25 @@
                     if (data.announcements) appData.announcements = data.announcements;
                     if (data.trainings) appData.trainings = data.trainings;
                     if (data.requests) appData.requests = data.requests;
+                    // Load admin password directly from the database
                     if (data.adminPassword) appData.adminPassword = data.adminPassword;
-                    if (data.logoUrl) {
-                        appData.logoUrl = data.logoUrl;
-                        document.getElementById('institute-logo-img').src = data.logoUrl;
-                    }
-                    persistLocal();
+                    
                     renderCompanies();
                     renderAnnouncements();
                     updateStats();
                     if (document.getElementById('tab-admin') && !document.getElementById('tab-admin').classList.contains('hidden')) {
                         renderAdminTables();
                     }
+                } else {
+                    // Initialize database with default password if not created yet
+                    saveGlobalCloudData();
                 }
             }, (error) => {
-                console.warn("Cloud sync ignored permission restriction, relying on local persistence.");
+                console.warn("Cloud sync error.");
             });
         }
 
-        function persistLocal() {
-            localStorage.setItem('madina_unified_app_data_v2', JSON.stringify({
-                companies: appData.companies,
-                trainings: appData.trainings,
-                requests: appData.requests,
-                announcements: appData.announcements,
-                adminPassword: appData.adminPassword,
-                logoUrl: appData.logoUrl
-            }));
-        }
-
         async function saveGlobalCloudData() {
-            persistLocal();
             if (!db || !userId) return;
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'unified_database');
@@ -880,12 +835,11 @@
                     trainings: appData.trainings,
                     requests: appData.requests,
                     adminPassword: appData.adminPassword,
-                    logoUrl: appData.logoUrl,
                     updatedBy: userId,
                     timestamp: new Date().toISOString()
                 }, { merge: true });
             } catch (e) {
-                // Ignore permission errors silently to ensure seamless UI experience
+                console.error(e);
             }
         }
 
@@ -982,22 +936,7 @@
                 appData.adminPassword = newPass;
                 saveGlobalCloudData();
                 closeChangePasswordModal();
-                showMsg("تم التحديث", "تم تغيير الرقم السري بنجاح.");
-            }
-        }
-
-        window.handleLogoUpload = function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    appData.logoUrl = evt.target.result;
-                    document.getElementById('institute-logo-img').src = appData.logoUrl;
-                    localStorage.setItem('madina_logo_secure', appData.logoUrl);
-                    saveGlobalCloudData();
-                    showMsg("تم تحديث الشعار", "تم تغيير شعار المعهد بنجاح.");
-                };
-                reader.readAsDataURL(file);
+                showMsg("تم التحديث", "تم تغيير الرقم السري وحفظه في قاعدة البيانات السحابية بنجاح.");
             }
         }
 
@@ -1175,9 +1114,6 @@
             const comp = document.getElementById('letter-company').value;
             const headName = document.getElementById('letter-head-name').value;
             const deanName = document.getElementById('letter-dean-name').value;
-
-            document.getElementById('print-institute-logo').src = appData.logoUrl;
-            document.getElementById('print-seal-logo').src = appData.logoUrl;
 
             document.getElementById('print-student-name').innerText = name;
             document.getElementById('print-student-code').innerText = sId;
