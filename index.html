@@ -1,761 +1,1282 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>منظومة إدارة التدريب والبحث العلمي - معهد المدينة العالي للهندسة والتكنولوجيا</title>
-<link rel="icon" href="logo.png">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-  theme: { extend: {
-    colors: {
-      navy: { 800: '#1e3a8a', 900: '#0f172a' },
-      gold: { 400: '#f59e0b', 500: '#d97706', 600: '#b45309' }
-    },
-    fontFamily: { cairo: ['Cairo', 'sans-serif'] }
-  } }
-};
-</script>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<style>
-  body { font-family: 'Cairo', sans-serif; background: #f1f5f9; }
-  .fade-in { animation: fadeIn .45s ease both; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-  .nav-btn { transition: all .2s; }
-  .nav-btn.active { background: #d97706; color: #fff; }
-  .field { width: 100%; border: 1px solid #cbd5e1; border-radius: .6rem; padding: .6rem .85rem; background: #fff; outline: none; }
-  .field:focus { border-color: #1e3a8a; box-shadow: 0 0 0 3px rgba(30,58,138,.15); }
-  label.lbl { display: block; font-size: .85rem; font-weight: 700; color: #334155; margin-bottom: .3rem; }
-  .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .6rem 1.2rem; border-radius: .6rem; font-weight: 700; transition: all .2s; }
-  .btn-primary { background: #1e3a8a; color: #fff; } .btn-primary:hover { background: #0f172a; }
-  .btn-gold { background: #d97706; color: #fff; } .btn-gold:hover { background: #b45309; }
-  .btn-ghost { background: #e2e8f0; color: #0f172a; } .btn-ghost:hover { background: #cbd5e1; }
-  .btn[disabled] { opacity: .5; cursor: not-allowed; }
-  .card { background: #fff; border-radius: 1rem; box-shadow: 0 1px 3px rgba(15,23,42,.1); }
-  table.tbl { width: 100%; border-collapse: collapse; font-size: .9rem; }
-  table.tbl th { background: #1e3a8a; color: #fff; padding: .6rem; text-align: right; white-space: nowrap; }
-  table.tbl td { padding: .55rem .6rem; border-bottom: 1px solid #e2e8f0; }
-  table.tbl tr:hover td { background: #f8fafc; }
-  .badge { display: inline-block; padding: .15rem .65rem; border-radius: 999px; font-size: .78rem; font-weight: 700; }
-
-  /* Letter sheet */
-  #letter-sheet { position: relative; background: #fff; width: 100%; max-width: 794px; margin: 0 auto; padding: 36px 44px; box-shadow: 0 4px 20px rgba(0,0,0,.15); line-height: 2; color: #0f172a; overflow: hidden; }
-  #letter-sheet .wm { position: absolute; top: 50%; left: 50%; width: 420px; height: 420px; transform: translate(-50%,-50%); opacity: .07; pointer-events: none; object-fit: contain; }
-  #letter-sheet .seal { position: absolute; width: 150px; height: 150px; opacity: .28; object-fit: contain; transform: rotate(-12deg); }
-  @media print {
-    .no-print { display: none !important; }
-    body { background: #fff; }
-    #letter-sheet { box-shadow: none; max-width: none; padding: 0; }
-    @page { size: A4; margin: 14mm; }
-    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معهد المدينة العالي للهندسة والتكنولوجيا - منظومة إدارة التدريب والبحث العلمي بالمعهد</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#1e3a8a',
+                            900: '#0f172a',
+                        },
+                        gold: {
+                            500: '#d97706',
+                            600: '#b45309',
+                            400: '#f59e0b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f8fafc;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body class="text-slate-800">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-<!-- ============ HEADER ============ -->
-<header class="no-print sticky top-0 z-40 bg-navy-900 text-white shadow-lg">
-  <div class="max-w-7xl mx-auto px-4 py-2 flex items-center gap-3">
-    <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center overflow-hidden shrink-0 border-2 border-gold-400">
-      <img src="logo.png" alt="شعار المعهد" class="w-full h-full object-contain site-logo" onerror="logoFallback(this)">
-    </div>
-    <div class="leading-tight min-w-0">
-      <div class="font-extrabold text-sm sm:text-base truncate">معهد المدينة العالي للهندسة والتكنولوجيا</div>
-      <div class="text-gold-400 text-xs sm:text-sm font-semibold truncate">منظومة إدارة التدريب والبحث العلمي</div>
-    </div>
-    <nav class="hidden lg:flex items-center gap-1 mr-auto" id="nav-desktop"></nav>
-    <button class="lg:hidden mr-auto btn btn-gold !px-3 !py-2" onclick="toggleMenu()" aria-label="القائمة"><i class="fa-solid fa-bars"></i></button>
-  </div>
-  <nav id="nav-mobile" class="hidden lg:hidden px-4 pb-3 grid grid-cols-2 gap-2"></nav>
-</header>
-
-<main class="max-w-7xl mx-auto px-4 py-6">
-
-<!-- ============ HOME ============ -->
-<section id="tab-home" class="tab fade-in">
-  <div class="rounded-2xl overflow-hidden bg-gradient-to-l from-navy-900 via-navy-800 to-navy-800 text-white p-8 sm:p-12 relative">
-    <div class="absolute -left-10 -bottom-10 w-72 h-72 rounded-full bg-gold-500/20"></div>
-    <div class="relative max-w-3xl">
-      <span class="badge bg-gold-500 text-white mb-3">العام الأكاديمي 2026/2027</span>
-      <h1 class="text-3xl sm:text-4xl font-extrabold leading-snug mb-3">مرحباً بكم في منظومة إدارة التدريب والبحث العلمي</h1>
-      <p class="text-slate-200 mb-6 leading-8">بوابتكم للاطلاع على فرص التدريب الصيفي، والتقديم للشركات، والاستعلام عن سجل التدريب، وإصدار خطابات التدريب الرسمية بخطوات سريعة وسهلة.</p>
-      <div class="flex flex-wrap gap-3">
-        <button class="btn btn-gold" onclick="switchTab('companies')"><i class="fa-solid fa-building"></i> استعرض الشركات المتاحة</button>
-        <button class="btn bg-white text-navy-800 hover:bg-slate-100" onclick="switchTab('inquiry')"><i class="fa-solid fa-magnifying-glass"></i> استعلام الطالب</button>
-        <button class="btn bg-white/10 hover:bg-white/20 text-white border border-white/30" onclick="switchTab('letters')"><i class="fa-solid fa-file-lines"></i> إصدار خطاب تدريب</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="grid md:grid-cols-3 gap-5 mt-6">
-    <div class="card p-6 border-t-4 border-navy-800">
-      <div class="w-12 h-12 rounded-xl bg-navy-800 text-white flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-landmark"></i></div>
-      <h3 class="font-extrabold text-lg mb-2 text-navy-800">عن المعهد</h3>
-      <p class="text-slate-600 leading-8 text-sm">معهد المدينة العالي للهندسة والتكنولوجيا مؤسسة تعليمية تقدم برامج هندسية معتمدة، وتهتم بربط الدراسة الأكاديمية باحتياجات سوق العمل وتأهيل مهندسين قادرين على التطبيق العملي.</p>
-    </div>
-    <div class="card p-6 border-t-4 border-gold-500">
-      <div class="w-12 h-12 rounded-xl bg-gold-500 text-white flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-eye"></i></div>
-      <h3 class="font-extrabold text-lg mb-2 text-navy-800">رؤية لجنة التدريب</h3>
-      <p class="text-slate-600 leading-8 text-sm">بناء شراكات فعّالة مع الشركات والمؤسسات الصناعية لتوفير فرص تدريب نوعية للطلاب، ودعم البحث العلمي التطبيقي، وتنظيم التدريب بصورة إلكترونية شفافة.</p>
-    </div>
-    <div class="card p-6 border-t-4 border-navy-800">
-      <div class="w-12 h-12 rounded-xl bg-navy-800 text-white flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-sun"></i></div>
-      <h3 class="font-extrabold text-lg mb-2 text-navy-800">أهمية التدريب الصيفي</h3>
-      <p class="text-slate-600 leading-8 text-sm">يمنح الطالب خبرة ميدانية حقيقية، وينمّي مهاراته المهنية والتواصلية، ويعرّفه ببيئة العمل، ويفتح أمامه فرص التوظيف بعد التخرج.</p>
-    </div>
-  </div>
-
-  <h2 class="text-2xl font-extrabold text-navy-800 mt-10 mb-4"><i class="fa-solid fa-graduation-cap text-gold-500"></i> التخصصات الهندسية المعتمدة</h2>
-  <div class="grid md:grid-cols-3 gap-5">
-    <div class="card p-6 text-center hover:shadow-xl transition">
-      <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-navy-800 to-navy-900 text-gold-400 flex items-center justify-center text-2xl mb-3"><i class="fa-solid fa-tower-cell"></i></div>
-      <h3 class="font-extrabold text-navy-800">هندسة الإلكترونيات والإتصالات الكهربية</h3>
-      <p class="text-xs text-slate-500 mt-1">Electronics &amp; Electrical Communications</p>
-    </div>
-    <div class="card p-6 text-center hover:shadow-xl transition">
-      <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-navy-800 to-navy-900 text-gold-400 flex items-center justify-center text-2xl mb-3"><i class="fa-solid fa-helmet-safety"></i></div>
-      <h3 class="font-extrabold text-navy-800">الهندسة المدنية</h3>
-      <p class="text-xs text-slate-500 mt-1">Civil Engineering</p>
-    </div>
-    <div class="card p-6 text-center hover:shadow-xl transition">
-      <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-navy-800 to-navy-900 text-gold-400 flex items-center justify-center text-2xl mb-3"><i class="fa-solid fa-microchip"></i></div>
-      <h3 class="font-extrabold text-navy-800">هندسة الحاسبات والتحكم</h3>
-      <p class="text-xs text-slate-500 mt-1">Computer &amp; Control Engineering</p>
-    </div>
-  </div>
-</section>
-
-<!-- ============ ANNOUNCEMENTS ============ -->
-<section id="tab-announcements" class="tab hidden fade-in">
-  <h2 class="text-2xl font-extrabold text-navy-800 mb-4"><i class="fa-solid fa-bullhorn text-gold-500"></i> إعلانات لجنة التدريب</h2>
-  <div id="ann-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-</section>
-
-<!-- ============ COMPANIES ============ -->
-<section id="tab-companies" class="tab hidden fade-in">
-  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-    <h2 class="text-2xl font-extrabold text-navy-800"><i class="fa-solid fa-building text-gold-500"></i> الشركات المتاحة للتدريب</h2>
-    <div class="relative w-full sm:w-80">
-      <i class="fa-solid fa-magnifying-glass absolute right-3 top-3.5 text-slate-400"></i>
-      <input id="company-search" class="field !pr-9" placeholder="ابحث باسم الشركة أو المجال..." oninput="renderCompanies()">
-    </div>
-  </div>
-  <div id="company-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-</section>
-
-<!-- ============ INQUIRY ============ -->
-<section id="tab-inquiry" class="tab hidden fade-in">
-  <h2 class="text-2xl font-extrabold text-navy-800 mb-4"><i class="fa-solid fa-id-card text-gold-500"></i> استعلام الطالب</h2>
-  <form class="card p-6 grid sm:grid-cols-3 gap-4 items-end" onsubmit="doInquiry(event)">
-    <div><label class="lbl">كود الطالب (الكود الجامعي)</label><input id="inq-id" class="field" required inputmode="numeric"></div>
-    <div><label class="lbl">الرقم القومي (14 رقم)</label><input id="inq-nid" class="field" required maxlength="14" inputmode="numeric" oninput="this.value=digits(this.value)"></div>
-    <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> استعلام</button>
-  </form>
-  <div id="inq-result" class="mt-6"></div>
-</section>
-
-<!-- ============ LETTERS ============ -->
-<section id="tab-letters" class="tab hidden fade-in">
-  <h2 class="no-print text-2xl font-extrabold text-navy-800 mb-4"><i class="fa-solid fa-file-signature text-gold-500"></i> الخطابات الرسمية</h2>
-  <form id="letter-form" class="no-print card p-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6" onsubmit="buildLetter(event)">
-    <div><label class="lbl">اسم الطالب بالكامل</label><input id="l-name" class="field" required></div>
-    <div><label class="lbl">كود الطالب</label><input id="l-id" class="field" required></div>
-    <div><label class="lbl">القسم</label>
-      <select id="l-dept" class="field" required>
-        <option>هندسة الإلكترونيات والإتصالات الكهربية</option>
-        <option>الهندسة المدنية</option>
-        <option>هندسة الحاسبات والتحكم</option>
-      </select></div>
-    <div><label class="lbl">الفرقة / العام الدراسي</label><input id="l-year" class="field" required value="2026/2027"></div>
-    <div><label class="lbl">الشركة المطلوب التدريب بها</label><input id="l-company" class="field" required list="company-list"></div>
-    <div><label class="lbl">اسم رئيس لجنة التدريب</label><input id="l-head" class="field" required></div>
-    <div><label class="lbl">اسم عميد المعهد</label><input id="l-dean" class="field" required></div>
-    <div class="sm:col-span-2 lg:col-span-2 flex items-end gap-3 flex-wrap">
-      <button class="btn btn-primary"><i class="fa-solid fa-file-circle-check"></i> إنشاء الخطاب</button>
-      <button type="button" id="print-btn" class="btn btn-gold hidden" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة الخطاب</button>
-    </div>
-  </form>
-  <div id="letter-wrap"></div>
-</section>
-
-<!-- ============ ADMIN ============ -->
-<section id="tab-admin" class="tab hidden fade-in">
-  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-    <h2 class="text-2xl font-extrabold text-navy-800"><i class="fa-solid fa-gauge-high text-gold-500"></i> لوحة التحكم</h2>
-    <div class="flex flex-wrap gap-2">
-      <button class="btn btn-gold" onclick="exportXlsx()"><i class="fa-solid fa-file-excel"></i> تصدير Excel</button>
-      <button class="btn btn-primary" onclick="publishData()"><i class="fa-solid fa-cloud-arrow-up"></i> ملف النشر data.json</button>
-      <button class="btn btn-ghost" onclick="backupData()"><i class="fa-solid fa-download"></i> نسخة احتياطية</button>
-      <label class="btn btn-ghost cursor-pointer"><i class="fa-solid fa-upload"></i> استرجاع<input type="file" accept=".json" class="hidden" onchange="restoreData(event)"></label>
-      <button class="btn btn-ghost" onclick="openModal('pw-modal')"><i class="fa-solid fa-key"></i> كلمة المرور</button>
-      <button class="btn btn-ghost text-red-600" onclick="adminLogout()"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="stats"></div>
-
-  <div class="grid lg:grid-cols-2 gap-5">
-    <form class="card p-5 grid grid-cols-2 gap-3" onsubmit="addCompany(event)">
-      <h3 class="col-span-2 font-extrabold text-navy-800"><i class="fa-solid fa-plus text-gold-500"></i> إضافة شركة</h3>
-      <div class="col-span-2 sm:col-span-1"><label class="lbl">اسم الشركة</label><input id="c-name" class="field" required></div>
-      <div class="col-span-2 sm:col-span-1"><label class="lbl">المجال</label><input id="c-field" class="field" required></div>
-      <div class="col-span-2 sm:col-span-1"><label class="lbl">عدد الأماكن المتاحة</label><input id="c-seats" type="number" min="0" class="field" required></div>
-      <div class="col-span-2 sm:col-span-1"><label class="lbl">المميزات / الشروط</label><input id="c-perks" class="field"></div>
-      <button class="btn btn-primary col-span-2"><i class="fa-solid fa-plus"></i> إضافة الشركة</button>
-    </form>
-
-    <form class="card p-5 grid grid-cols-2 gap-3" onsubmit="addAnnouncement(event)">
-      <h3 class="col-span-2 font-extrabold text-navy-800"><i class="fa-solid fa-bullhorn text-gold-500"></i> نشر إعلان جديد</h3>
-      <div class="col-span-2"><label class="lbl">عنوان الإعلان</label><input id="a-title" class="field" required></div>
-      <div class="col-span-2"><label class="lbl">نص الإعلان</label><textarea id="a-body" class="field" rows="3" required></textarea></div>
-      <button class="btn btn-primary col-span-2"><i class="fa-solid fa-paper-plane"></i> نشر الإعلان</button>
-    </form>
-  </div>
-
-  <form class="card p-5 mt-5 grid sm:grid-cols-2 lg:grid-cols-4 gap-3" onsubmit="addTraining(event)">
-    <h3 class="sm:col-span-2 lg:col-span-4 font-extrabold text-navy-800"><i class="fa-solid fa-user-graduate text-gold-500"></i> تسجيل تدريب طالب</h3>
-    <div><label class="lbl">كود الطالب</label><input id="t-id" class="field" required onchange="lookupStudent()" onblur="lookupStudent()"></div>
-    <div><label class="lbl">الرقم القومي (14 رقم)</label><input id="t-nid" class="field" required maxlength="14" inputmode="numeric" oninput="this.value=digits(this.value)"></div>
-    <div><label class="lbl">اسم الطالب</label><input id="t-name" class="field" required></div>
-    <div><label class="lbl">القسم</label>
-      <select id="t-dept" class="field">
-        <option>هندسة الإلكترونيات والإتصالات الكهربية</option>
-        <option>الهندسة المدنية</option>
-        <option>هندسة الحاسبات والتحكم</option>
-      </select></div>
-    <div><label class="lbl">الشركة</label><input id="t-company" class="field" required list="company-list"></div>
-    <div><label class="lbl">تاريخ البداية</label><input id="t-start" type="date" class="field" required onchange="calcDays()"></div>
-    <div><label class="lbl">تاريخ النهاية</label><input id="t-end" type="date" class="field" required onchange="calcDays()"></div>
-    <div><label class="lbl">عدد الأيام</label><input id="t-days" class="field bg-slate-100" readonly></div>
-    <div><label class="lbl">التقدير</label>
-      <select id="t-grade" class="field">
-        <option>امتياز</option><option>جيد جداً</option><option>جيد</option><option>مقبول</option><option>راسب</option><option>لم يُقيَّم بعد</option>
-      </select></div>
-    <button class="btn btn-gold sm:col-span-2 lg:col-span-3 self-end"><i class="fa-solid fa-floppy-disk"></i> حفظ سجل التدريب</button>
-  </form>
-  <datalist id="company-list"></datalist>
-
-  <div class="card p-5 mt-5">
-    <h3 class="font-extrabold text-navy-800 mb-3"><i class="fa-solid fa-inbox text-gold-500"></i> طلبات التقديم على الشركات</h3>
-    <div class="overflow-x-auto"><table class="tbl" id="req-table"></table></div>
-  </div>
-
-  <div class="card p-5 mt-5">
-    <h3 class="font-extrabold text-navy-800 mb-3"><i class="fa-solid fa-building text-gold-500"></i> الشركات المسجلة</h3>
-    <div class="overflow-x-auto"><table class="tbl" id="comp-table"></table></div>
-  </div>
-
-  <div class="card p-5 mt-5">
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
-      <h3 class="font-extrabold text-navy-800"><i class="fa-solid fa-users text-gold-500"></i> سجلات الطلاب والتدريب</h3>
-      <input id="tr-search" class="field !w-64" placeholder="بحث بالاسم أو الكود..." oninput="renderAdmin()">
-    </div>
-    <div class="overflow-x-auto"><table class="tbl" id="tr-table"></table></div>
-  </div>
-
-  <div class="card p-5 mt-5">
-    <h3 class="font-extrabold text-navy-800 mb-3"><i class="fa-solid fa-bullhorn text-gold-500"></i> الإعلانات المنشورة</h3>
-    <div class="overflow-x-auto"><table class="tbl" id="ann-table"></table></div>
-  </div>
-</section>
-
-</main>
-
-<footer class="no-print bg-navy-900 text-slate-300 text-center text-sm py-5 mt-8">
-  <span class="text-gold-400 font-bold">معهد المدينة العالي للهندسة والتكنولوجيا</span> — لجنة التدريب والبحث العلمي © 2026/2027
-</footer>
-
-<!-- ============ MODALS ============ -->
-<div id="msg-modal" class="no-print hidden fixed inset-0 z-50 bg-black/50 items-center justify-center p-4">
-  <div class="card w-full max-w-sm p-6 text-center fade-in">
-    <div id="msg-icon" class="text-5xl mb-3"></div>
-    <h3 id="msg-title" class="font-extrabold text-lg mb-1"></h3>
-    <p id="msg-text" class="text-slate-600 mb-4 leading-7"></p>
-    <button class="btn btn-primary w-full" onclick="closeModal('msg-modal')">حسناً</button>
-  </div>
-</div>
-
-<div id="confirm-modal" class="no-print hidden fixed inset-0 z-50 bg-black/50 items-center justify-center p-4">
-  <div class="card w-full max-w-sm p-6 text-center fade-in">
-    <div class="text-5xl mb-3 text-gold-500"><i class="fa-solid fa-circle-question"></i></div>
-    <p id="confirm-text" class="font-bold mb-4 leading-7"></p>
-    <div class="flex gap-2">
-      <button class="btn btn-gold flex-1" id="confirm-yes">تأكيد</button>
-      <button class="btn btn-ghost flex-1" onclick="closeModal('confirm-modal')">إلغاء</button>
-    </div>
-  </div>
-</div>
-
-<div id="login-modal" class="no-print hidden fixed inset-0 z-50 bg-black/50 items-center justify-center p-4">
-  <form class="card w-full max-w-sm p-6 fade-in" onsubmit="adminLogin(event)">
-    <div class="text-center text-4xl text-navy-800 mb-2"><i class="fa-solid fa-lock"></i></div>
-    <h3 class="font-extrabold text-lg text-center mb-4">دخول المسؤول</h3>
-    <label class="lbl">كلمة المرور</label>
-    <input id="login-pw" type="password" class="field mb-4" required autocomplete="current-password">
-    <div class="flex gap-2">
-      <button class="btn btn-primary flex-1">دخول</button>
-      <button type="button" class="btn btn-ghost flex-1" onclick="closeModal('login-modal')">إلغاء</button>
-    </div>
-  </form>
-</div>
-
-<div id="pw-modal" class="no-print hidden fixed inset-0 z-50 bg-black/50 items-center justify-center p-4">
-  <form class="card w-full max-w-sm p-6 fade-in" onsubmit="changePassword(event)">
-    <h3 class="font-extrabold text-lg mb-4"><i class="fa-solid fa-key text-gold-500"></i> تغيير كلمة المرور</h3>
-    <label class="lbl">كلمة المرور الحالية</label><input id="pw-old" type="password" class="field mb-3" required>
-    <label class="lbl">كلمة المرور الجديدة (4 أحرف على الأقل)</label><input id="pw-new" type="password" class="field mb-3" required minlength="4">
-    <label class="lbl">تأكيد كلمة المرور الجديدة</label><input id="pw-new2" type="password" class="field mb-4" required minlength="4">
-    <div class="flex gap-2">
-      <button class="btn btn-primary flex-1">حفظ</button>
-      <button type="button" class="btn btn-ghost flex-1" onclick="closeModal('pw-modal')">إلغاء</button>
-    </div>
-  </form>
-</div>
-
-<div id="apply-modal" class="no-print hidden fixed inset-0 z-50 bg-black/50 items-center justify-center p-4">
-  <form class="card w-full max-w-md p-6 fade-in" onsubmit="submitRequest(event)">
-    <h3 class="font-extrabold text-lg mb-1"><i class="fa-solid fa-paper-plane text-gold-500"></i> طلب تدريب</h3>
-    <p id="apply-company" class="text-navy-800 font-bold mb-4"></p>
-    <input type="hidden" id="apply-cid">
-    <label class="lbl">كود الطالب</label><input id="ap-id" class="field mb-3" required>
-    <label class="lbl">الرقم القومي (14 رقم)</label><input id="ap-nid" class="field mb-3" required maxlength="14" inputmode="numeric" oninput="this.value=digits(this.value)">
-    <label class="lbl">الاسم بالكامل</label><input id="ap-name" class="field mb-4" required>
-    <div class="flex gap-2">
-      <button class="btn btn-gold flex-1">إرسال الطلب</button>
-      <button type="button" class="btn btn-ghost flex-1" onclick="closeModal('apply-modal')">إلغاء</button>
-    </div>
-  </form>
-</div>
-
-<script>
-/* ================= Helpers ================= */
-const $ = id => document.getElementById(id);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-const digits = s => String(s || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g, '');
-const normId = s => String(s || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim().toLowerCase();
-const todayISO = () => new Date().toISOString().slice(0, 10);
-const fmtDate = iso => { if (!iso) return '-'; const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }); };
-const SALT = 'mhi-training-2026|';
-async function sha(s) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(SALT + s));
-  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
-}
-function logoFallback(img) {
-  const d = document.createElement('div');
-  d.className = 'w-full h-full flex items-center justify-center bg-navy-800 text-gold-400 font-extrabold text-xs';
-  d.textContent = 'MHI';
-  img.replaceWith(d);
-}
-
-/* ================= Storage ================= */
-const KEY = 'mhi_training_system_v1';
-function defaults() {
-  return {
-    companies: [], trainings: [], requests: [],
-    announcements: [{ id: uid(), title: 'مرحباً بكم في منظومة التدريب', body: 'تعلن لجنة التدريب والبحث العلمي عن بدء التسجيل لبرنامج التدريب الصيفي للعام الأكاديمي 2026/2027. تابعوا الإعلانات وتصفحوا الشركات المتاحة.', date: todayISO() }],
-    adminPassword: '1234', letterDefaults: {}, updatedAt: 0, baseStamp: 0, dirty: false
-  };
-}
-function loadDB() {
-  try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && Array.isArray(d.companies)) return Object.assign(defaults(), d); } catch (e) {}
-  return defaults();
-}
-let db = loadDB();
-/* shared = true marks a change to public data (companies / trainings / announcements) */
-function save(shared = true) {
-  if (shared) { db.updatedAt = Date.now(); db.dirty = true; }
-  try { localStorage.setItem(KEY, JSON.stringify(db)); }
-  catch (e) { showMsg('error', 'تعذر الحفظ', 'مساحة تخزين المتصفح ممتلئة أو غير متاحة. قم بتصدير نسخة احتياطية.'); }
-}
-
-/* Load the published data.json (if present in the repo) for visitors */
-async function syncRemote() {
-  try {
-    const r = await fetch('data.json?t=' + Date.now(), { cache: 'no-store' });
-    if (!r.ok) return;
-    const rd = await r.json();
-    if ((rd.updatedAt || 0) > (db.baseStamp || 0) && !db.dirty) {
-      db.companies = rd.companies || []; db.trainings = rd.trainings || []; db.announcements = rd.announcements || [];
-      db.baseStamp = rd.updatedAt; db.updatedAt = rd.updatedAt;
-      save(false); renderAll();
-    }
-  } catch (e) { /* no data.json yet, or opened from file:// */ }
-}
-
-/* ================= UI plumbing ================= */
-const TABS = [
-  ['home', 'الرئيسية', 'fa-house'], ['announcements', 'الإعلانات', 'fa-bullhorn'],
-  ['companies', 'الشركات المتاحة', 'fa-building'], ['inquiry', 'استعلام الطالب', 'fa-id-card'],
-  ['letters', 'الخطابات الرسمية', 'fa-file-lines'], ['admin', 'لوحة التحكم', 'fa-user-shield']
-];
-let isAdmin = sessionStorage.getItem('mhi_admin') === '1';
-function buildNav() {
-  const mk = (cls) => TABS.map(([k, t, i]) =>
-    `<button data-tab="${k}" onclick="switchTab('${k}')" class="nav-btn ${cls} rounded-lg text-sm font-bold hover:bg-white/10"><i class="fa-solid ${i}"></i> ${k === 'admin' ? (isAdmin ? t : 'دخول المسؤول') : t}</button>`).join('');
-  $('nav-desktop').innerHTML = mk('px-3 py-2');
-  $('nav-mobile').innerHTML = mk('px-3 py-2 bg-white/5');
-}
-function toggleMenu() { $('nav-mobile').classList.toggle('hidden'); }
-function switchTab(name) {
-  if (name === 'admin' && !isAdmin) { openModal('login-modal'); setTimeout(() => $('login-pw').focus(), 50); return; }
-  document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden'));
-  const el = $('tab-' + name); el.classList.remove('hidden');
-  el.classList.remove('fade-in'); void el.offsetWidth; el.classList.add('fade-in');
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-  $('nav-mobile').classList.add('hidden');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (name === 'admin') renderAdmin();
-}
-function openModal(id) { $(id).classList.remove('hidden'); $(id).classList.add('flex'); }
-function closeModal(id) { $(id).classList.add('hidden'); $(id).classList.remove('flex'); }
-function showMsg(type, title, text) {
-  const map = { success: ['fa-circle-check', 'text-green-600'], error: ['fa-circle-xmark', 'text-red-600'], info: ['fa-circle-info', 'text-navy-800'] };
-  const [ic, col] = map[type] || map.info;
-  $('msg-icon').innerHTML = `<i class="fa-solid ${ic} ${col}"></i>`;
-  $('msg-title').textContent = title; $('msg-text').textContent = text;
-  openModal('msg-modal');
-}
-function askConfirm(text, cb) {
-  $('confirm-text').textContent = text;
-  $('confirm-yes').onclick = () => { closeModal('confirm-modal'); cb(); };
-  openModal('confirm-modal');
-}
-
-/* ================= Admin auth ================= */
-function adminLogin(e) {
-  e.preventDefault();
-  if ($('login-pw').value === db.adminPassword) {
-    isAdmin = true; sessionStorage.setItem('mhi_admin', '1');
-    $('login-pw').value = ''; closeModal('login-modal'); buildNav(); switchTab('admin');
-  } else showMsg('error', 'كلمة مرور غير صحيحة', 'يرجى المحاولة مرة أخرى.');
-}
-function adminLogout() { isAdmin = false; sessionStorage.removeItem('mhi_admin'); buildNav(); switchTab('home'); }
-function changePassword(e) {
-  e.preventDefault();
-  if ($('pw-old').value !== db.adminPassword) return showMsg('error', 'خطأ', 'كلمة المرور الحالية غير صحيحة.');
-  if ($('pw-new').value !== $('pw-new2').value) return showMsg('error', 'خطأ', 'كلمتا المرور الجديدتان غير متطابقتين.');
-  db.adminPassword = $('pw-new').value; save(false);
-  e.target.reset(); closeModal('pw-modal'); showMsg('success', 'تم', 'تم تغيير كلمة المرور بنجاح.');
-}
-
-/* ================= Renderers ================= */
-function renderAll() { renderAnnouncements(); renderCompanies(); if (isAdmin) renderAdmin(); fillDatalist(); }
-function fillDatalist() { $('company-list').innerHTML = db.companies.map(c => `<option value="${esc(c.name)}">`).join(''); }
-function emptyState(icon, text) { return `<div class="col-span-full card p-10 text-center text-slate-500"><i class="fa-solid ${icon} text-4xl text-slate-300 mb-3"></i><div>${text}</div></div>`; }
-
-function renderAnnouncements() {
-  const list = [...db.announcements].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-  $('ann-grid').innerHTML = list.length ? list.map(a => `
-    <article class="card p-5 border-r-4 border-gold-500">
-      <div class="text-xs text-gold-600 font-bold mb-2"><i class="fa-regular fa-calendar"></i> ${fmtDate(a.date)}</div>
-      <h3 class="font-extrabold text-navy-800 mb-2">${esc(a.title)}</h3>
-      <p class="text-sm text-slate-600 leading-7 whitespace-pre-line">${esc(a.body)}</p>
-    </article>`).join('') : emptyState('fa-bullhorn', 'لا توجد إعلانات حالياً.');
-}
-
-function renderCompanies() {
-  const q = ($('company-search').value || '').trim().toLowerCase();
-  const list = db.companies.filter(c => !q || c.name.toLowerCase().includes(q) || (c.field || '').toLowerCase().includes(q));
-  $('company-grid').innerHTML = list.length ? list.map(c => `
-    <div class="card p-5 flex flex-col">
-      <div class="flex items-start justify-between gap-2 mb-3">
-        <h3 class="font-extrabold text-navy-800 text-lg">${esc(c.name)}</h3>
-        <span class="badge ${c.seats > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${c.seats > 0 ? c.seats + ' مكان متاح' : 'مكتمل العدد'}</span>
-      </div>
-      <div class="text-sm text-slate-600 mb-2"><i class="fa-solid fa-industry text-gold-500 w-5"></i> ${esc(c.field)}</div>
-      <div class="text-sm text-slate-600 mb-4 flex-1"><i class="fa-solid fa-list-check text-gold-500 w-5"></i> ${esc(c.perks || 'لا توجد شروط إضافية')}</div>
-      <button class="btn btn-gold w-full" ${c.seats > 0 ? '' : 'disabled'} onclick="openApply('${c.id}')"><i class="fa-solid fa-paper-plane"></i> تقديم طلب</button>
-    </div>`).join('') : emptyState('fa-building', db.companies.length ? 'لا توجد نتائج مطابقة للبحث.' : 'لم تتم إضافة شركات بعد.');
-}
-
-function gradeBadge(g) {
-  const m = { 'امتياز': 'bg-green-100 text-green-700', 'جيد جداً': 'bg-blue-100 text-blue-700', 'جيد': 'bg-sky-100 text-sky-700', 'مقبول': 'bg-amber-100 text-amber-700', 'راسب': 'bg-red-100 text-red-700' };
-  return `<span class="badge ${m[g] || 'bg-slate-100 text-slate-600'}">${esc(g)}</span>`;
-}
-function trainingStatus(t) {
-  const n = todayISO();
-  if (t.start > n) return ['لم يبدأ بعد', 'bg-slate-100 text-slate-600'];
-  if (t.end < n) return ['مكتمل', 'bg-green-100 text-green-700'];
-  return ['جارٍ حالياً', 'bg-amber-100 text-amber-700'];
-}
-const statusBadge = t => { const [s, c] = trainingStatus(t); return `<span class="badge ${c}">${s}</span>`; };
-
-/* ================= Apply for a company ================= */
-function openApply(cid) {
-  const c = db.companies.find(x => x.id === cid); if (!c) return;
-  $('apply-cid').value = cid; $('apply-company').textContent = c.name;
-  openModal('apply-modal');
-}
-function submitRequest(e) {
-  e.preventDefault();
-  const c = db.companies.find(x => x.id === $('apply-cid').value);
-  const sid = normId($('ap-id').value), nid = digits($('ap-nid').value), name = $('ap-name').value.trim();
-  if (!c) return showMsg('error', 'خطأ', 'الشركة غير موجودة.');
-  if (nid.length !== 14) return showMsg('error', 'رقم قومي غير صحيح', 'الرقم القومي يجب أن يتكون من 14 رقماً.');
-  if (name.split(/\s+/).length < 3) return showMsg('error', 'الاسم غير مكتمل', 'يرجى كتابة الاسم الثلاثي على الأقل.');
-  if (c.seats <= 0) return showMsg('error', 'مكتمل العدد', 'لا توجد أماكن متاحة في هذه الشركة.');
-  if (db.requests.some(r => r.studentId === sid && r.companyId === c.id)) return showMsg('error', 'طلب مكرر', 'لقد قدمت طلباً لهذه الشركة من قبل.');
-  db.requests.push({ id: uid(), studentId: sid, nationalId: nid, name, companyId: c.id, companyName: c.name, date: todayISO(), status: 'pending' });
-  save(false); e.target.reset(); closeModal('apply-modal'); if (isAdmin) renderAdmin();
-  showMsg('success', 'تم إرسال الطلب', 'تم تسجيل طلبك للتدريب في ' + c.name + '.');
-}
-
-/* ================= Student inquiry ================= */
-async function doInquiry(e) {
-  e.preventDefault();
-  const sid = normId($('inq-id').value), nid = digits($('inq-nid').value);
-  if (nid.length !== 14) return showMsg('error', 'رقم قومي غير صحيح', 'الرقم القومي يجب أن يتكون من 14 رقماً.');
-  const h = await sha(nid);
-  const recs = db.trainings.filter(t => normId(t.studentId) === sid && (t.nidHash ? t.nidHash === h : t.nationalId === nid));
-  const box = $('inq-result');
-  if (!recs.length) {
-    box.innerHTML = `<div class="card p-8 text-center fade-in"><i class="fa-solid fa-user-slash text-4xl text-slate-300 mb-3"></i><p class="font-bold">لا توجد بيانات مطابقة</p><p class="text-sm text-slate-500">تأكد من كود الطالب والرقم القومي، أو لم يتم تسجيل تدريب لك بعد.</p></div>`;
-    return;
-  }
-  recs.sort((a, b) => b.start.localeCompare(a.start));
-  const days = recs.reduce((s, t) => s + (+t.days || 0), 0);
-  const myReqs = db.requests.filter(r => r.studentId === sid && r.nationalId === nid);
-  box.innerHTML = `
-  <div class="fade-in">
-    <div class="card p-6 mb-4 flex flex-wrap items-center gap-4">
-      <div class="w-16 h-16 rounded-full bg-navy-800 text-gold-400 flex items-center justify-center text-2xl"><i class="fa-solid fa-user-graduate"></i></div>
-      <div class="flex-1 min-w-[200px]">
-        <h3 class="font-extrabold text-xl text-navy-800">${esc(recs[0].name)}</h3>
-        <div class="text-sm text-slate-500">كود الطالب: ${esc(recs[0].studentId)} — ${esc(recs[0].department || '')}</div>
-      </div>
-      <div class="flex gap-3">
-        <div class="text-center bg-slate-50 rounded-xl px-5 py-3"><div class="text-2xl font-extrabold text-navy-800">${recs.length}</div><div class="text-xs text-slate-500">عدد التدريبات</div></div>
-        <div class="text-center bg-slate-50 rounded-xl px-5 py-3"><div class="text-2xl font-extrabold text-gold-600">${days}</div><div class="text-xs text-slate-500">إجمالي الأيام</div></div>
-      </div>
-    </div>
-    <div class="card p-6">
-      <h4 class="font-extrabold text-navy-800 mb-4"><i class="fa-solid fa-timeline text-gold-500"></i> سجل التدريب</h4>
-      <div class="border-r-2 border-slate-200 pr-5 space-y-5">
-        ${recs.map(t => `
-          <div class="relative">
-            <span class="absolute -right-[27px] top-2 w-3 h-3 rounded-full bg-gold-500 ring-4 ring-white"></span>
-            <div class="bg-slate-50 rounded-xl p-4">
-              <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
-                <div class="font-extrabold text-navy-800"><i class="fa-solid fa-building text-gold-500"></i> ${esc(t.company)}</div>
-                <div class="flex gap-2">${statusBadge(t)} ${gradeBadge(t.grade)}</div>
-              </div>
-              <div class="text-sm text-slate-600">من ${fmtDate(t.start)} إلى ${fmtDate(t.end)} — <b>${t.days}</b> يوم</div>
+    <!-- Header / Navbar -->
+    <header class="bg-navy-900 text-white shadow-lg border-b-4 border-gold-500 sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <!-- Dynamic Logo Container -->
+                <div class="relative group cursor-pointer" onclick="document.getElementById('logo-upload-input').click()" title="انقر لتغيير شعار المعهد">
+                    <div id="logo-preview-container" class="w-12 h-12 bg-white rounded-xl p-1 flex items-center justify-center shadow-md overflow-hidden border-2 border-gold-400">
+                        <img id="institute-logo-img" src="https://placehold.co/70x70/1e3a8a/fbbf24?text=LOGO" alt="شعار معهد المدينة العالي للهندسة والتكنولوجيا" class="w-full h-full object-contain">
+                    </div>
+                    <div class="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs transition">
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+                    <input type="file" id="logo-upload-input" class="hidden" accept="image/*" onchange="handleLogoUpload(event)">
+                </div>
+                <div>
+                    <h1 class="text-sm md:text-base font-bold tracking-wide">معهد المدينة العالي للهندسة والتكنولوجيا</h1>
+                    <p class="text-xs text-gold-400 font-semibold tracking-wider">منظومة إدارة التدريب والبحث العلمي بالمعهد</p>
+                </div>
             </div>
-          </div>`).join('')}
-      </div>
+            <!-- Navigation Tabs -->
+            <nav class="flex space-x-1 sm:space-x-2 space-x-reverse mt-3 md:mt-0 items-center overflow-x-auto pb-1 md:pb-0">
+                <button onclick="switchTab('home')" id="btn-home" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition bg-gold-500 text-navy-900 shadow whitespace-nowrap">
+                    <i class="fa-solid fa-house ml-1"></i> الرئيسية
+                </button>
+                <button onclick="switchTab('announcements')" id="btn-announcements" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition hover:bg-slate-800 text-slate-200 whitespace-nowrap">
+                    <i class="fa-solid fa-bullhorn ml-1"></i> الإعلانات
+                </button>
+                <button onclick="switchTab('companies')" id="btn-companies" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition hover:bg-slate-800 text-slate-200 whitespace-nowrap">
+                    <i class="fa-solid fa-building ml-1"></i> الشركات المتاحة
+                </button>
+                <button onclick="switchTab('student')" id="btn-student" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition hover:bg-slate-800 text-slate-200 whitespace-nowrap">
+                    <i class="fa-solid fa-id-card ml-1"></i> استعلام الطالب
+                </button>
+                <button onclick="switchTab('letters')" id="btn-letters" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition hover:bg-slate-800 text-gold-400 border border-gold-500/30 whitespace-nowrap">
+                    <i class="fa-solid fa-file-contract ml-1"></i> الخطابات الرسمية
+                </button>
+                
+                <!-- Admin Gate Button -->
+                <button onclick="openAdminLoginModal()" id="btn-admin-gate" class="bg-gold-500 hover:bg-gold-600 text-navy-900 font-bold px-3 py-2 rounded-lg text-xs transition mr-2 shadow flex items-center gap-1.5 shrink-0" title="دخول إدارة المعهد (الرقم السري: 1234)">
+                    <i class="fa-solid fa-user-lock"></i>
+                    <span class="hidden sm:inline">دخول المسؤولين</span>
+                </button>
+                
+                <!-- Admin Tab (Hidden until login) -->
+                <button onclick="switchTab('admin')" id="btn-admin" class="tab-btn hidden px-4 py-2 rounded-lg text-sm font-semibold transition border border-gold-500 text-gold-400 bg-slate-900 whitespace-nowrap">
+                    <i class="fa-solid fa-user-shield ml-1"></i> لوحة التحكم
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl fade-in border-t-4 border-gold-500">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-navy-900 flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-gold-500"></i> تسجيل دخول المسؤولين
+                </h3>
+                <button onclick="closeAdminLoginModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <p class="text-sm text-slate-600 mb-4">أدخل الرقم السري الخاص بإدارة لجنة التدريب لمعهد المدينة:</p>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">الرقم السري</label>
+                    <input type="password" id="admin-password-input" required class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-navy-800 focus:outline-none text-center tracking-widest text-lg font-bold" placeholder="••••">
+                </div>
+                <div id="admin-login-error" class="text-red-500 text-xs hidden text-center font-semibold"></div>
+                <div class="flex gap-2 pt-2">
+                    <button type="submit" class="flex-1 bg-navy-900 hover:bg-navy-800 text-white font-bold py-3 rounded-xl transition shadow">
+                        دخول لوحة التحكم
+                    </button>
+                    <button type="button" onclick="closeAdminLoginModal()" class="px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 rounded-xl transition">
+                        إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-    ${myReqs.length ? `<div class="card p-6 mt-4"><h4 class="font-extrabold text-navy-800 mb-3"><i class="fa-solid fa-inbox text-gold-500"></i> طلبات التقديم المحفوظة على هذا الجهاز</h4>
-      ${myReqs.map(r => `<div class="text-sm py-1">${esc(r.companyName)} — ${fmtDate(r.date)} — ${r.status === 'approved' ? '<span class="badge bg-green-100 text-green-700">تمت الموافقة</span>' : '<span class="badge bg-amber-100 text-amber-700">قيد المراجعة</span>'}</div>`).join('')}</div>` : ''}
-  </div>`;
-}
 
-/* ================= Official letter ================= */
-function loadLetterDefaults() {
-  const d = db.letterDefaults || {};
-  if (d.head) $('l-head').value = d.head;
-  if (d.dean) $('l-dean').value = d.dean;
-}
-function buildLetter(e) {
-  e.preventDefault();
-  const v = id => $(id).value.trim();
-  db.letterDefaults = { head: v('l-head'), dean: v('l-dean') }; save(false);
-  const ref = 'ت.ص/' + new Date().getFullYear() + '/' + Math.floor(1000 + Math.random() * 9000);
-  $('letter-wrap').innerHTML = `
-  <div id="letter-sheet" class="fade-in" style="font-family:'Cairo',sans-serif">
-    <img class="wm" src="logo.png" alt="" onerror="this.remove()">
-    <div style="position:relative">
-      <div class="flex items-start justify-between gap-2" style="border-bottom:3px double #1e3a8a;padding-bottom:10px">
-        <div class="text-center text-[13px] font-bold leading-6" style="flex:1">
-          جمهورية مصر العربية<br>وزارة التعليم العالي والبحث العلمي<br>معهد المدينة العالي للهندسة والتكنولوجيا
+    <!-- Change Password Modal -->
+    <div id="change-pass-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl fade-in border-t-4 border-gold-500">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-navy-900 flex items-center gap-2">
+                    <i class="fa-solid fa-key text-gold-500"></i> تغيير الرقم السري للمسؤول
+                </h3>
+                <button onclick="closeChangePasswordModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <p class="text-sm text-slate-600 mb-4">أدخل الرقم السري الجديد الخاص بلوحة التحكم:</p>
+            <form onsubmit="handlePasswordChange(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">الرقم السري الجديد</label>
+                    <input type="password" id="new-admin-password" required class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-navy-800 focus:outline-none text-center tracking-widest text-lg font-bold" placeholder="أدخل الرقم الجديد">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="submit" class="flex-1 bg-navy-900 hover:bg-navy-800 text-white font-bold py-3 rounded-xl transition shadow">
+                        حفظ التغيير
+                    </button>
+                    <button type="button" onclick="closeChangePasswordModal()" class="px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 rounded-xl transition">
+                        إلغاء
+                    </button>
+                </div>
+            </form>
         </div>
-        <div style="flex:0 0 110px;text-align:center"><img src="logo.png" alt="" style="width:100px;height:100px;object-fit:contain;margin:auto" onerror="this.remove()"></div>
-        <div class="text-center text-[13px] font-bold leading-6" style="flex:1">
-          لجنة التدريب والبحث العلمي<br>رقم الصادر: ${ref}<br>التاريخ: ${fmtDate(todayISO())}
-        </div>
-      </div>
-
-      <div class="mt-5 text-[15px]">
-        <p class="font-extrabold">السيد الأستاذ / رئيس مجلس الإدارة — شركة ${esc(v('l-company'))}</p>
-        <p class="font-bold">تحية طيبة وبعد،،،</p>
-        <p style="text-align:justify">يتقدم معهد المدينة العالي للهندسة والتكنولوجيا بخالص التحية والتقدير لسيادتكم، ويسرّه أن يتعاون معكم في مجال التدريب الميداني لطلابه، إيماناً بأهمية الربط بين الدراسة الأكاديمية ومتطلبات سوق العمل. ويرجو المعهد التكرم بالموافقة على قبول الطالب/ـة الموضحة بياناته بالجدول التالي للتدريب الصيفي بشركتكم الموقرة:</p>
-      </div>
-
-      <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:14px">
-        <tbody>
-          ${[['اسم الطالب', v('l-name')], ['كود الطالب', v('l-id')], ['القسم', v('l-dept')], ['الفرقة / العام الدراسي', v('l-year')], ['جهة التدريب', v('l-company')]]
-            .map(([k, val]) => `<tr><td style="border:1px solid #1e3a8a;background:#eff3ff;padding:5px 10px;width:38%;font-weight:800">${k}</td><td style="border:1px solid #1e3a8a;padding:5px 10px">${esc(val)}</td></tr>`).join('')}
-        </tbody>
-      </table>
-
-      <p class="text-[15px]" style="text-align:justify">وتفضلوا بقبول فائق الاحترام والتقدير،،،</p>
-
-      <div style="border:1.5px solid #b45309;background:#fffbeb;border-radius:8px;padding:10px 14px;margin:14px 0;font-size:12.5px;line-height:1.9;text-align:justify">
-        <b style="color:#b45309">إقرار وتنويه قانوني:</b>
-        هذا الخطاب صادر لغرض التدريب الميداني فقط، ولا يُعدّ عقد عمل أو تعيين، ولا يترتب عليه أي التزام مالي أو وظيفي على المعهد أو الشركة. ويقر الطالب بأنه يتدرب على مسؤوليته الشخصية، وبالتزامه بلوائح الشركة وقواعد السلامة والصحة المهنية والحفاظ على سرية المعلومات التي يطلع عليها، ولا يتحمل المعهد أي مسؤولية قانونية عن أي إصابات أو أضرار أو خسائر قد تنشأ أثناء التدريب خارج نطاق المعهد.
-      </div>
-
-      <div class="flex justify-around text-center mt-6" style="position:relative;min-height:130px">
-        <div style="position:relative;min-width:200px">
-          <div class="font-extrabold">رئيس لجنة التدريب</div>
-          <div class="mt-8 font-bold">${esc(v('l-head'))}</div>
-          <div class="text-xs text-slate-500">التوقيع: ..............................</div>
-        </div>
-        <img class="seal" src="logo.png" alt="" style="left:50%;top:-14px;margin-left:-75px" onerror="this.remove()">
-        <div style="position:relative;min-width:200px">
-          <div class="font-extrabold">عميد المعهد</div>
-          <div class="mt-8 font-bold">${esc(v('l-dean'))}</div>
-          <div class="text-xs text-slate-500">التوقيع: ..............................</div>
-        </div>
-      </div>
     </div>
-  </div>`;
-  $('print-btn').classList.remove('hidden');
-  $('letter-wrap').scrollIntoView({ behavior: 'smooth' });
-}
 
-/* ================= Admin: stats & tables ================= */
-function renderAdmin() {
-  const students = new Set(db.trainings.map(t => normId(t.studentId))).size;
-  const pending = db.requests.filter(r => r.status === 'pending').length;
-  const stat = (i, n, l, c) => `<div class="card p-4 flex items-center gap-3"><div class="w-12 h-12 rounded-xl ${c} text-white flex items-center justify-center text-xl"><i class="fa-solid ${i}"></i></div><div><div class="text-2xl font-extrabold text-navy-800">${n}</div><div class="text-xs text-slate-500">${l}</div></div></div>`;
-  $('stats').innerHTML = stat('fa-building', db.companies.length, 'إجمالي الشركات', 'bg-navy-800') + stat('fa-users', students, 'الطلاب المسجلون', 'bg-gold-500') +
-    stat('fa-clipboard-check', db.trainings.length, 'التدريبات المنفذة', 'bg-navy-800') + stat('fa-hourglass-half', pending, 'طلبات معلقة', 'bg-gold-600');
+    <!-- Message Modal -->
+    <div id="msg-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl fade-in border-t-4 border-gold-500">
+            <div id="msg-icon" class="w-14 h-14 bg-navy-900 text-gold-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-3 shadow">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 id="msg-title" class="text-xl font-bold text-navy-900 mb-2"></h3>
+            <p id="msg-text" class="text-slate-600 text-sm mb-6 leading-relaxed"></p>
+            <button onclick="closeMsgModal()" class="w-full bg-navy-900 hover:bg-navy-800 text-white font-bold py-3 rounded-xl transition shadow">
+                حسناً
+            </button>
+        </div>
+    </div>
 
-  const empty = (cols, t) => `<tr><td colspan="${cols}" class="text-center text-slate-400 py-6">${t}</td></tr>`;
-  const del = (fn, id) => `<button class="text-red-600 hover:text-red-800 px-2" title="حذف" onclick="${fn}('${id}')"><i class="fa-solid fa-trash"></i></button>`;
+    <!-- Main Content Container -->
+    <main class="flex-grow container mx-auto px-4 py-6">
 
-  $('req-table').innerHTML = `<thead><tr><th>الطالب</th><th>الكود</th><th>الرقم القومي</th><th>الشركة</th><th>التاريخ</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody>` +
-    (db.requests.length ? db.requests.map(r => `<tr><td>${esc(r.name)}</td><td>${esc(r.studentId)}</td><td>${esc(r.nationalId)}</td><td>${esc(r.companyName)}</td><td>${fmtDate(r.date)}</td>
-      <td>${r.status === 'approved' ? '<span class="badge bg-green-100 text-green-700">تمت الموافقة</span>' : '<span class="badge bg-amber-100 text-amber-700">معلق</span>'}</td>
-      <td class="whitespace-nowrap">${r.status === 'pending' ? `<button class="text-green-600 hover:text-green-800 px-2" title="موافقة" onclick="approveRequest('${r.id}')"><i class="fa-solid fa-check"></i></button>` : ''}${del('deleteRequest', r.id)}</td></tr>`).join('') : empty(7, 'لا توجد طلبات')) + '</tbody>';
+        <!-- Tab 1: Home -->
+        <section id="tab-home" class="tab-content space-y-8 fade-in">
+            <div class="relative bg-gradient-to-r from-navy-900 via-navy-800 to-slate-900 text-white rounded-3xl p-8 md:p-12 shadow-2xl overflow-hidden border-b-4 border-gold-500">
+                <div class="absolute -left-10 -bottom-10 opacity-10 pointer-events-none">
+                    <i class="fa-solid fa-graduation-cap text-9xl"></i>
+                </div>
+                <div class="relative z-10 max-w-3xl">
+                    <span class="bg-gold-500 text-navy-900 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider inline-block mb-4 shadow">
+                        العام الأكاديمي 2026/2027
+                    </span>
+                    <h2 class="text-3xl md:text-5xl font-black mb-4 leading-tight">
+                        <span class="text-gold-400 block text-2xl md:text-3xl mb-2 font-bold">معهد المدينة العالي للهندسة والتكنولوجيا</span>
+                        منظومة إدارة التدريب والبحث العلمي بالمعهد
+                    </h2>
+                    <p class="text-slate-300 text-base md:text-lg mb-8 leading-relaxed">
+                        بوابة رسمية متكاملة لتنظيم وتوثيق التدريبات الصيفية الهندسية، ربط الطلاب بالشركات المتعاقدة، استخراج الخطابات الرسمية المعتمدة، ومتابعة السجلات الأكاديمية بالكامل.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="switchTab('companies')" class="bg-gold-500 hover:bg-gold-600 text-navy-900 font-bold px-6 py-3.5 rounded-xl transition shadow-lg flex items-center gap-2">
+                            <i class="fa-solid fa-building"></i> استعرض الشركات المتاحة
+                        </button>
+                        <button onclick="switchTab('student')" class="bg-white/10 hover:bg-white/20 text-white border border-white/30 font-bold px-6 py-3.5 rounded-xl transition flex items-center gap-2 backdrop-blur">
+                            <i class="fa-solid fa-magnifying-glass"></i> استعلام الطالب الذكي
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-  $('comp-table').innerHTML = `<thead><tr><th>الشركة</th><th>المجال</th><th>الأماكن</th><th>المميزات</th><th></th></tr></thead><tbody>` +
-    (db.companies.length ? db.companies.map(c => `<tr><td class="font-bold">${esc(c.name)}</td><td>${esc(c.field)}</td><td>${c.seats}</td><td>${esc(c.perks)}</td><td>${del('deleteCompany', c.id)}</td></tr>`).join('') : empty(5, 'لا توجد شركات')) + '</tbody>';
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-navy-900 text-gold-400 rounded-xl flex items-center justify-center text-xl mb-4 shadow">
+                            <i class="fa-solid fa-landmark"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-navy-900 mb-2">عن معهد المدينة</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            صرح أكاديمي رائد يهدف لإعداد مهندسين متميزين قادرين على المنافسة في سوق العمل المحلي والدولي عبر برامج هندسية متطورة وتدريب عملي مكثف.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500 font-semibold">
+                        <i class="fa-solid fa-location-dot text-gold-500 ml-1"></i> طريق سقارة السياحى – المريوطية – الهرم – جيزة
+                    </div>
+                </div>
 
-  const q = ($('tr-search').value || '').trim().toLowerCase();
-  const trs = db.trainings.filter(t => !q || t.name.toLowerCase().includes(q) || normId(t.studentId).includes(q));
-  $('tr-table').innerHTML = `<thead><tr><th>الكود</th><th>الاسم</th><th>الرقم القومي</th><th>الشركة</th><th>الفترة</th><th>الأيام</th><th>الحالة</th><th>التقدير</th><th></th></tr></thead><tbody>` +
-    (trs.length ? trs.map(t => `<tr><td>${esc(t.studentId)}</td><td class="font-bold">${esc(t.name)}</td><td>${t.nationalId ? esc(t.nationalId) : '<span class="text-slate-400">(مخفي)</span>'}</td><td>${esc(t.company)}</td><td class="whitespace-nowrap">${t.start} → ${t.end}</td><td>${t.days}</td><td>${statusBadge(t)}</td><td>${gradeBadge(t.grade)}</td><td>${del('deleteTraining', t.id)}</td></tr>`).join('') : empty(9, 'لا توجد سجلات')) + '</tbody>';
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-gold-500 text-navy-900 rounded-xl flex items-center justify-center text-xl mb-4 shadow">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-navy-900 mb-2">رؤية لجنة التدريب</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            توفير فرص تدريب صيفي حقيقية ومتميزة لكافة طلاب المعهد في كبرى الشركات الهندسية والمقاولات ومصانع الإلكترونيات والبرمجيات لصقل مهاراتهم التطبيقية.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500 font-semibold">
+                        <i class="fa-solid fa-check-circle text-green-600 ml-1"></i> ربط أكاديمي ومتابعة دورية
+                    </div>
+                </div>
 
-  $('ann-table').innerHTML = `<thead><tr><th>العنوان</th><th>التاريخ</th><th></th></tr></thead><tbody>` +
-    (db.announcements.length ? db.announcements.map(a => `<tr><td class="font-bold">${esc(a.title)}</td><td>${fmtDate(a.date)}</td><td>${del('deleteAnnouncement', a.id)}</td></tr>`).join('') : empty(3, 'لا توجد إعلانات')) + '</tbody>';
-  fillDatalist();
-}
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-navy-900 text-gold-400 rounded-xl flex items-center justify-center text-xl mb-4 shadow">
+                            <i class="fa-solid fa-briefcase"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-navy-900 mb-2">أهمية التدريب الصيفي</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            يمثل التدريب متطلب أساسي للتخرج ويمنح الطالب خبرة عملية بالواقع العملي، مع توثيق الساعات التدريبية بتقديرات رسمية معتمدة من المعهد.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500 font-semibold">
+                        <i class="fa-solid fa-star text-gold-500 ml-1"></i> توثيق وإصدار خطابات رسمية
+                    </div>
+                </div>
+            </div>
+        </section>
 
-function addCompany(e) {
-  e.preventDefault();
-  db.companies.push({ id: uid(), name: $('c-name').value.trim(), field: $('c-field').value.trim(), seats: Math.max(0, parseInt($('c-seats').value) || 0), perks: $('c-perks').value.trim() });
-  save(); e.target.reset(); renderAll(); showMsg('success', 'تمت الإضافة', 'تمت إضافة الشركة بنجاح.');
-}
-function deleteCompany(id) { askConfirm('هل تريد حذف هذه الشركة؟', () => { db.companies = db.companies.filter(c => c.id !== id); save(); renderAll(); }); }
-function addAnnouncement(e) {
-  e.preventDefault();
-  db.announcements.push({ id: uid(), title: $('a-title').value.trim(), body: $('a-body').value.trim(), date: todayISO() });
-  save(); e.target.reset(); renderAll(); showMsg('success', 'تم النشر', 'تم نشر الإعلان بنجاح.');
-}
-function deleteAnnouncement(id) { askConfirm('هل تريد حذف هذا الإعلان؟', () => { db.announcements = db.announcements.filter(a => a.id !== id); save(); renderAll(); }); }
-function approveRequest(id) {
-  const r = db.requests.find(x => x.id === id); if (!r) return;
-  const c = db.companies.find(x => x.id === r.companyId);
-  if (c) { if (c.seats <= 0) return showMsg('error', 'مكتمل العدد', 'لا توجد أماكن متاحة في هذه الشركة.'); c.seats -= 1; save(); }
-  r.status = 'approved'; save(false); renderAll();
-  showMsg('success', 'تمت الموافقة', 'تمت الموافقة على الطلب وخصم مكان من الشركة.');
-}
-function deleteRequest(id) { askConfirm('هل تريد حذف هذا الطلب؟', () => { db.requests = db.requests.filter(r => r.id !== id); save(false); renderAdmin(); }); }
-function deleteTraining(id) { askConfirm('هل تريد حذف سجل التدريب هذا؟', () => { db.trainings = db.trainings.filter(t => t.id !== id); save(); renderAdmin(); }); }
+        <!-- Tab 2: Announcements -->
+        <section id="tab-announcements" class="tab-content hidden space-y-6 fade-in">
+            <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-md border border-slate-100">
+                <div>
+                    <h2 class="text-2xl font-bold text-navy-900">إعلانات وتنويهات لجنة التدريب</h2>
+                    <p class="text-sm text-slate-600">تابع أحدث التعليمات، مواعيد تقديم التقارير، والفرص الجديدة بالمعهد.</p>
+                </div>
+                <div class="w-12 h-12 bg-gold-500/10 text-gold-600 rounded-xl flex items-center justify-center text-2xl">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+            </div>
+            <div id="announcements-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+        </section>
 
-/* Student training form */
-function lookupStudent() {
-  const sid = normId($('t-id').value); if (!sid) return;
-  const r = db.trainings.find(t => normId(t.studentId) === sid);
-  if (r) { $('t-name').value = r.name; if (r.nationalId) $('t-nid').value = r.nationalId; if (r.department) $('t-dept').value = r.department; }
-}
-function calcDays() {
-  const s = $('t-start').value, e = $('t-end').value;
-  if (s && e) { const d = Math.round((new Date(e) - new Date(s)) / 86400000) + 1; $('t-days').value = d > 0 ? d : ''; }
-}
-async function addTraining(e) {
-  e.preventDefault();
-  const nid = digits($('t-nid').value);
-  if (nid.length !== 14) return showMsg('error', 'رقم قومي غير صحيح', 'الرقم القومي يجب أن يتكون من 14 رقماً.');
-  calcDays();
-  const days = parseInt($('t-days').value);
-  if (!days || days < 1) return showMsg('error', 'تواريخ غير صحيحة', 'تاريخ النهاية يجب أن يكون بعد أو يساوي تاريخ البداية.');
-  const sid = normId($('t-id').value);
-  const clash = db.trainings.find(t => normId(t.studentId) === sid && t.nationalId && t.nationalId !== nid);
-  if (clash) return showMsg('error', 'بيانات متعارضة', 'هذا الكود مسجل برقم قومي مختلف. راجع البيانات.');
-  db.trainings.push({ id: uid(), studentId: $('t-id').value.trim(), nationalId: nid, nidHash: await sha(nid), name: $('t-name').value.trim(), department: $('t-dept').value, company: $('t-company').value.trim(), start: $('t-start').value, end: $('t-end').value, days, grade: $('t-grade').value });
-  save(); e.target.reset(); renderAdmin(); showMsg('success', 'تم الحفظ', 'تم حفظ سجل التدريب بنجاح.');
-}
+        <!-- Tab 3: Companies -->
+        <section id="tab-companies" class="tab-content hidden space-y-6 fade-in">
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-navy-900">الشركات والجهات الهندسية المتعاقدة</h2>
+                    <p class="text-sm text-slate-600">استعرض الشركات المتاحة لهذا العام، تفاصيل التدريب، وقدم طلبك مباشرة.</p>
+                </div>
+                <div class="w-full md:w-auto">
+                    <input type="text" id="company-search-input" oninput="renderCompanies()" placeholder="ابحث باسم الشركة أو التخصص..." class="w-full md:w-64 px-4 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-navy-800">
+                </div>
+            </div>
+            <div id="companies-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
 
-/* ================= Export / backup / publish ================= */
-function stamp() { return new Date().toISOString().slice(0, 10); }
-function download(name, blob) {
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
-  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-}
-function exportRows() {
-  return {
-    'سجلات التدريب': db.trainings.map(t => ({ 'كود الطالب': String(t.studentId), 'الرقم القومي': t.nationalId || '', 'اسم الطالب': t.name, 'القسم': t.department || '', 'الشركة': t.company, 'تاريخ البداية': t.start, 'تاريخ النهاية': t.end, 'عدد الأيام': t.days, 'الحالة': trainingStatus(t)[0], 'التقدير': t.grade })),
-    'الشركات': db.companies.map(c => ({ 'اسم الشركة': c.name, 'المجال': c.field, 'الأماكن المتاحة': c.seats, 'المميزات / الشروط': c.perks })),
-    'طلبات التقديم': db.requests.map(r => ({ 'اسم الطالب': r.name, 'كود الطالب': String(r.studentId), 'الرقم القومي': r.nationalId, 'الشركة': r.companyName, 'التاريخ': r.date, 'الحالة': r.status === 'approved' ? 'تمت الموافقة' : 'معلق' })),
-    'الإعلانات': db.announcements.map(a => ({ 'العنوان': a.title, 'النص': a.body, 'التاريخ': a.date }))
-  };
-}
-function exportXlsx() {
-  const sheets = exportRows();
-  if (!window.XLSX) return exportCsvFallback(sheets);
-  const wb = XLSX.utils.book_new();
-  wb.Workbook = { Views: [{ RTL: true }] };
-  for (const [name, rows] of Object.entries(sheets)) {
-    const ws = rows.length ? XLSX.utils.json_to_sheet(rows) : XLSX.utils.aoa_to_sheet([['لا توجد بيانات']]);
-    if (rows.length) ws['!cols'] = Object.keys(rows[0]).map(k => ({ wch: Math.max(12, k.length + 4, ...rows.map(r => String(r[k] ?? '').length + 2).slice(0, 200)) }));
-    XLSX.utils.book_append_sheet(wb, ws, name);
-  }
-  XLSX.writeFile(wb, 'MHI_Training_Data_' + stamp() + '.xlsx');
-  showMsg('success', 'تم التصدير', 'تم تنزيل ملف Excel ويحتوي على التدريبات والشركات والطلبات والإعلانات.');
-}
-function exportCsvFallback(sheets) {
-  const rows = sheets['سجلات التدريب']; if (!rows.length) return showMsg('info', 'لا توجد بيانات', 'لا توجد سجلات تدريب للتصدير.');
-  const keys = Object.keys(rows[0]);
-  const csv = [keys.join(','), ...rows.map(r => keys.map(k => '"' + String(r[k] ?? '').replace(/"/g, '""') + '"').join(','))].join('\n');
-  download('MHI_Training_' + stamp() + '.csv', new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }));
-  showMsg('info', 'تم التصدير كملف CSV', 'تعذر تحميل مكتبة Excel (تحقق من الإنترنت)، فتم تصدير سجلات التدريب بصيغة CSV يفتحها Excel.');
-}
-function backupData() {
-  download('MHI_backup_' + stamp() + '.json', new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' }));
-}
-function restoreData(ev) {
-  const f = ev.target.files[0]; if (!f) return;
-  const rd = new FileReader();
-  rd.onload = () => {
-    try {
-      const d = JSON.parse(rd.result);
-      if (!Array.isArray(d.companies) || !Array.isArray(d.trainings)) throw 0;
-      askConfirm('سيتم استبدال كل البيانات الحالية بالنسخة الاحتياطية. هل تريد المتابعة؟', () => {
-        db = Object.assign(defaults(), d); db.dirty = true; db.updatedAt = Date.now(); save(false); renderAll(); showMsg('success', 'تم الاسترجاع', 'تم استرجاع البيانات بنجاح.');
-      });
-    } catch (e) { showMsg('error', 'ملف غير صالح', 'الملف ليس نسخة احتياطية صحيحة.'); }
-  };
-  rd.readAsText(f); ev.target.value = '';
-}
-/* Public data file: national IDs are replaced by a one-way hash; requests are never published */
-async function publishData() {
-  const trainings = [];
-  for (const t of db.trainings) { const { nationalId, ...rest } = t; trainings.push({ ...rest, nidHash: t.nidHash || await sha(nationalId) }); }
-  const out = { updatedAt: db.updatedAt || Date.now(), companies: db.companies, trainings, announcements: db.announcements };
-  db.baseStamp = out.updatedAt; db.dirty = false; save(false);
-  download('data.json', new Blob([JSON.stringify(out)], { type: 'application/json' }));
-  showMsg('success', 'تم إنشاء data.json', 'ارفع هذا الملف إلى مستودع GitHub بجوار index.html ليراه جميع الطلاب. الأرقام القومية تُنشر مشفّرة، ولا تُنشر الطلبات.');
-}
+        <!-- Tab 4: Student Portal -->
+        <section id="tab-student" class="tab-content hidden space-y-6 fade-in">
+            <div class="max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-navy-900 text-gold-400 rounded-2xl mx-auto flex items-center justify-center text-2xl mb-3 shadow">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-navy-900">استعلام الطالب الذكي</h2>
+                    <p class="text-slate-600 text-sm mt-1">أدخل رقم الهوية (الكود الجامعي) والرقم القومي للاطلاع على سجلك التدريبي الكامل.</p>
+                </div>
 
-/* ================= Init ================= */
-buildNav(); renderAll(); loadLetterDefaults(); switchTab('home'); syncRemote();
-document.addEventListener('keydown', e => { if (e.key === 'Escape') ['msg-modal', 'confirm-modal', 'login-modal', 'pw-modal', 'apply-modal'].forEach(closeModal); });
-</script>
+                <form onsubmit="handleStudentInquiry(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">رقم الهوية (الكود الجامعي)</label>
+                        <input type="text" id="inquiry-id" required class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-navy-800 focus:outline-none text-sm" placeholder="مثال: 20230155">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">الرقم القومي (14 رقم)</label>
+                        <input type="text" id="inquiry-national-id" required maxlength="14" class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-navy-800 focus:outline-none text-sm" placeholder="مثال: 30401010101234">
+                    </div>
+                    <button type="submit" class="w-full bg-navy-900 hover:bg-navy-800 text-white font-bold py-3.5 rounded-xl transition shadow flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass"></i> استعلام فوري عن السجل التدريبي
+                    </button>
+                </form>
+            </div>
+            <div id="student-result-container" class="hidden space-y-6"></div>
+        </section>
+
+        <!-- Tab 5: Official Letters Generator -->
+        <section id="tab-letters" class="tab-content hidden space-y-6 fade-in">
+            <div class="max-w-4xl mx-auto bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
+                <div class="text-center mb-8">
+                    <span class="bg-gold-500/10 text-gold-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider inline-block mb-2">خدمات شؤون الطلاب</span>
+                    <h2 class="text-2xl font-bold text-navy-900">إصدار خطاب توجيه تدريب رسمي للشركات</h2>
+                    <p class="text-slate-600 text-sm mt-1">قم بإدخال بياناتك وتحديد العام الدراسي وأسماء المسؤولين لإصدار خطاب رسمي معتمد للجهة التدريبية.</p>
+                </div>
+
+                <form onsubmit="generateOfficialLetter(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">اسم الطالب الرباعي</label>
+                        <input type="text" id="letter-name" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="الاسم ثلاثي أو رباعي">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">رقم الهوية (الكود الجامعي)</label>
+                        <input type="text" id="letter-student-id" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="الكود الجامعي">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">القسم / التخصص الهندسي</label>
+                        <select id="letter-department" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm bg-white">
+                            <option value="هندسة الإلكترونيات والإتصالات الكهربية">هندسة الإلكترونيات والإتصالات الكهربية</option>
+                            <option value="الهندسة المدنية">الهندسة المدنية</option>
+                            <option value="هندسة الحاسبات والتحكم">هندسة الحاسبات والتحكم</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">الفرقة الدراسية الحالية</label>
+                        <select id="letter-year" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm bg-white">
+                            <option value="الفرقة الإعدادية">الفرقة الإعدادية</option>
+                            <option value="الفرقة الأولى">الفرقة الأولى</option>
+                            <option value="الفرقة الثانية">الفرقة الثانية</option>
+                            <option value="الفرقة الثالثة">الفرقة الثالثة</option>
+                            <option value="الفرقة الرابعة">الفرقة الرابعة</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">العام الأكاديمي</label>
+                        <input type="text" id="letter-academic-year" required value="2026/2027" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="مثال: 2026/2027">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">اسم الشركة أو الجهة التدريبية</label>
+                        <input type="text" id="letter-company" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="مثال: شركة المقاولون العرب">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">اسم رئيس لجنة التدريب</label>
+                        <input type="text" id="letter-head-name" required value="د. م. / رئيس لجنة التدريب" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">اسم عميد المعهد</label>
+                        <input type="text" id="letter-dean-name" required value="أ.د. / عميد المعهد" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm">
+                    </div>
+                    <div class="md:col-span-2 pt-2">
+                        <button type="submit" class="w-full bg-gold-500 hover:bg-gold-600 text-navy-900 font-bold py-3.5 rounded-xl transition shadow flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-print"></i> إصدار ومعاينة الخطاب الرسمي المعتمد
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Letter Preview Area -->
+            <div id="letter-preview-container" class="hidden max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-2xl border-8 border-double border-navy-900 relative mt-8 print:border-4 print:shadow-none">
+                <div class="absolute top-4 left-4 print:hidden">
+                    <button onclick="window.print()" class="bg-navy-900 text-gold-400 px-4 py-2 rounded-xl text-xs font-bold hover:bg-navy-800 shadow flex items-center gap-2">
+                        <i class="fa-solid fa-print"></i> طباعة الخطاب
+                    </button>
+                </div>
+                
+                <!-- Official Header with Institute Logo -->
+                <div class="border-b-4 border-gold-500 pb-6 mb-8">
+                    <div class="flex justify-between items-center">
+                        <div class="text-right text-xs font-bold text-navy-900 leading-relaxed">
+                            جمهورية مصر العربية<br>وزارة التعليم العالي والبحث العلمي<br>معهد المدينة العالي للهندسة والتكنولوجيا<br>
+                            <span class="text-[10px] text-slate-600 font-normal">طريق سقارة السياحى – المريوطية – الهرم – جيزة</span>
+                        </div>
+                        <div class="w-24 h-24 bg-white border-2 border-gold-500 rounded-2xl p-1 flex items-center justify-center shadow-md overflow-hidden">
+                            <img src="" id="print-institute-logo" alt="شعار معهد المدينة" class="w-full h-full object-contain">
+                        </div>
+                        <div class="text-left text-xs font-bold text-navy-900 leading-relaxed">
+                            لجنة التدريب الصيفي<br>الخط الساخن: <span class="text-gold-600">19203</span><br>البريد: Eng@madinagroups.edu.eg<br>
+                            العام الأكاديمي: <span id="print-academic-year"></span>
+                        </div>
+                    </div>
+                    <div class="text-center mt-6">
+                        <span class="bg-navy-900 text-gold-400 px-6 py-2 rounded-xl text-sm font-black tracking-widest uppercase shadow">
+                            خطاب توجيه تدريب صيفي معتمد وإقرار إخلاء مسؤولية
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Letter Body -->
+                <div class="space-y-5 text-slate-900 text-sm md:text-base leading-loose">
+                    <div class="flex justify-between items-center font-bold">
+                        <div>السادة / <span id="print-company-name" class="underline underline-offset-8 text-navy-900 text-lg"></span> المحترمين،</div>
+                        <div class="text-xs text-slate-500">التاريخ: <span id="print-current-date"></span></div>
+                    </div>
+                    
+                    <p class="font-semibold text-slate-700">تحية طيبة وبعد،،</p>
+                    
+                    <p class="text-justify indent-6">
+                        إلحاقاً بخطة المعهد لإعداد وتأهيل الكوادر الهندسية المتميزة، وتوثيقاً للروابط المشتركة بين المعهد ومؤسسات الصناعة والقطاع الهندسي؛ نفيد سيادتكم بأن الطالب الموضح بياناته أدناه مقيد ومنتظم بالدراسة بمعهد المدينة العالي للهندسة والتكنولوجيا، وذلك خلال العام الأكاديمي (<span id="print-academic-year-2"></span>).
+                    </p>
+
+                    <!-- Student Data Box -->
+                    <div class="bg-slate-50 border-2 border-navy-900/20 rounded-2xl p-6 my-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-bold shadow-sm">
+                        <div class="flex items-center gap-2">
+                            <span class="text-slate-500 font-semibold">اسم الطالب:</span>
+                            <span id="print-student-name" class="text-navy-900 text-base"></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-slate-500 font-semibold">الكود الجامعي:</span>
+                            <span id="print-student-code" class="text-navy-900 text-base"></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-slate-500 font-semibold">القسم الهندسي:</span>
+                            <span id="print-student-dept" class="text-navy-900 text-base"></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-slate-500 font-semibold">الفرقة الدراسية:</span>
+                            <span id="print-student-year" class="text-navy-900 text-base"></span>
+                        </div>
+                    </div>
+
+                    <p class="text-justify indent-6">
+                        ونظراً لرغبة الطالب في قضاء فترة التدريب الصيفي لديكم لصقل مهاراته العملية والتطبيقية، فإننا نرجو من سيادتكم التكرم بالموافقة على تدريبه بمعرفتكم وتحت إشرافكم الفني والميداني.
+                    </p>
+
+                    <!-- Legal Disclaimer Box -->
+                    <div class="bg-amber-50/80 border-r-4 border-amber-600 p-4 rounded-l-2xl text-xs md:text-sm text-slate-800 leading-relaxed font-semibold">
+                        <b>إقرار وتنويه قانوني:</b> يُقر المعهد بأن التدريب الصيفي هو تدريب اختياري حر لتطوير قدرات الطالب، وعليه فإن المعهد لا يتحمل أي مسؤولية قانونية أو مالية أو تعويضية عن أية إصابات عمل أو التزامات تجاه الشركة أو الطرف الثالث طوال فترة تواجد الطالب بالتدريب.
+                    </div>
+
+                    <p class="text-center font-bold text-navy-900 pt-2">
+                        ولسيادتكم وافر الشكر والتقدير والاحترام لحسن تعاونكم الدائم في خدمة الشباب المهندسين.
+                    </p>
+                </div>
+
+                <!-- Signatures & Seal Section with Watermark Logo -->
+                <div class="mt-14 pt-8 border-t-2 border-slate-300 flex justify-between items-end text-xs md:text-sm font-bold text-navy-900">
+                    <div class="text-center">
+                        <p class="mb-1 text-slate-600">رئيس لجنة التدريب</p>
+                        <p id="print-head-name" class="text-navy-900 font-bold mt-12 underline underline-offset-4"></p>
+                    </div>
+                    <div class="w-36 h-36 border-4 border-dashed border-gold-500 rounded-full flex flex-col items-center justify-center p-2 text-center relative bg-gold-50/30 shadow-inner">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
+                            <img src="" id="print-seal-logo" class="w-28 h-28 object-contain">
+                        </div>
+                        <span class="text-[11px] text-navy-900 font-black z-10">خاتم المعهد الرسمي</span>
+                        <span class="text-[9px] text-slate-600 mt-1 z-10">شؤون الطلاب والخريجين</span>
+                    </div>
+                    <div class="text-center">
+                        <p class="mb-1 text-slate-600">عميد المعهد</p>
+                        <p id="print-dean-name" class="text-navy-900 font-bold mt-12 underline underline-offset-4"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 6: Admin Dashboard -->
+        <section id="tab-admin" class="tab-content hidden space-y-8 fade-in">
+            <div class="bg-navy-900 text-white p-6 rounded-2xl shadow-xl flex flex-wrap justify-between items-center gap-4 border-b-4 border-gold-500">
+                <div>
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-user-shield text-gold-400"></i> لوحة التحكم الإدارية
+                    </h2>
+                    <p class="text-xs text-slate-300 mt-1">إدارة الشركات، تسجيل وتعديل تدريبات الطلاب، نشر الإعلانات، ومتابعة الطلبات.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="exportDataToExcel()" class="bg-gold-500 hover:bg-gold-600 text-navy-900 font-bold px-4 py-2 rounded-xl text-xs transition shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> تصدير البيانات (Excel)
+                    </button>
+                    <button onclick="openChangePasswordModal()" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-xs transition border border-white/20">
+                        <i class="fa-solid fa-key ml-1"></i> تغيير الرقم السري
+                    </button>
+                    <button onclick="adminLogout()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs transition shadow">
+                        <i class="fa-solid fa-right-from-bracket ml-1"></i> خروج
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl shadow-md border border-slate-100 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-navy-900 text-gold-400 rounded-xl flex items-center justify-center text-xl shadow">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-semibold">الشركات المتعاقدة</p>
+                        <h4 id="stat-companies" class="text-2xl font-black text-navy-900">0</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-md border border-slate-100 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-gold-500 text-navy-900 rounded-xl flex items-center justify-center text-xl shadow">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-semibold">إجمالي الطلاب المسجلين</p>
+                        <h4 id="stat-students" class="text-2xl font-black text-navy-900">0</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-md border border-slate-100 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-navy-900 text-gold-400 rounded-xl flex items-center justify-center text-xl shadow">
+                        <i class="fa-solid fa-briefcase"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-semibold">إجمالي التدريبات المخوضة</p>
+                        <h4 id="stat-trainings" class="text-2xl font-black text-navy-900">0</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-md border border-slate-100 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-gold-500 text-navy-900 rounded-xl flex items-center justify-center text-xl shadow">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-semibold">طلبات تقديم الشركات</p>
+                        <h4 id="stat-requests" class="text-2xl font-black text-navy-900">0</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Company & Training -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100">
+                    <h3 class="text-lg font-bold text-navy-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-building-circle-check text-gold-500"></i> إضافة شركة جديدة للمعهد
+                    </h3>
+                    <form onsubmit="handleAddNewCompany(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">اسم الشركة</label>
+                            <input type="text" id="new-comp-name" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="اسم الشركة أو المصنع">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">المجال / التخصص</label>
+                                <input type="text" id="new-comp-field" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="مثال: شبكات وإتصالات">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">المقاعد المتاحة</label>
+                                <input type="number" id="new-comp-seats" required value="20" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">مزايا أو متطلبات التدريب</label>
+                            <input type="text" id="new-comp-perks" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="مثال: مكافأة مالية + شهادة معتمدة">
+                        </div>
+                        <button type="submit" class="w-full bg-navy-900 hover:bg-navy-800 text-white font-bold py-3 rounded-xl transition text-sm shadow">
+                            حفظ وإضافة الشركة
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100">
+                    <h3 class="text-lg font-bold text-navy-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-file-pen text-gold-500"></i> تسجيل تدريب جديد لطالب (متعدد)
+                    </h3>
+                    <form onsubmit="handleAddNewTraining(event)" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">رقم الهوية (الكود الجامعي)</label>
+                                <div class="flex gap-1">
+                                    <input type="text" id="admin-stud-id" onblur="lookupStudentForAdmin()" required class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="أدخل الكود">
+                                    <button type="button" onclick="lookupStudentForAdmin()" class="bg-slate-200 px-3 py-2 rounded-xl text-xs hover:bg-slate-300 font-bold">جلب</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">الرقم القومي (14 رقم)</label>
+                                <input type="text" id="admin-stud-nat-id" required maxlength="14" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="الرقم القومي">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">اسم الطالب الرباعي</label>
+                                <input type="text" id="admin-stud-name" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="الاسم الرباعي">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">اختر الشركة المتعاقد معها</label>
+                                <select id="admin-train-comp" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm bg-white"></select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">عنوان / موضوع التدريب</label>
+                            <input type="text" id="admin-train-topic" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="مثال: تدريب شبكات سيسكو">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">تاريخ البدء</label>
+                                <input type="date" id="admin-train-start" required class="w-full px-2 py-2.5 border border-slate-300 rounded-xl text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">تاريخ الانتهاء</label>
+                                <input type="date" id="admin-train-end" required class="w-full px-2 py-2.5 border border-slate-300 rounded-xl text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">التقييم</label>
+                                <select id="admin-train-grade" class="w-full px-2 py-2.5 border border-slate-300 rounded-xl text-xs bg-white">
+                                    <option value="امتياز">امتياز</option>
+                                    <option value="جيد جداً">جيد جداً</option>
+                                    <option value="جيد">جيد</option>
+                                    <option value="مقبول">مقبول</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-gold-500 hover:bg-gold-600 text-navy-900 font-bold py-3 rounded-xl transition text-sm shadow">
+                            حفظ وإضافة التدريب للطالب
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Announcements Management -->
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100">
+                <h3 class="text-lg font-bold text-navy-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-bullhorn text-gold-500"></i> نشر إعلان أو تنويه جديد للطلاب
+                </h3>
+                <form onsubmit="handleAddNewAnnouncement(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">عنوان الإعلان</label>
+                            <input type="text" id="ann-title" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="مثال: موعد تسليم تقارير التدريب الصيفي">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">محتوى الإعلان</label>
+                            <input type="text" id="ann-desc" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm" placeholder="التفاصيل والتعليمات...">
+                        </div>
+                    </div>
+                    <button type="submit" class="bg-navy-900 hover:bg-navy-800 text-white font-bold px-6 py-2.5 rounded-xl transition text-xs shadow">
+                        نشر الإعلان فوراً
+                    </button>
+                </form>
+            </div>
+
+            <!-- Company Requests Table -->
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-navy-900 flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-list text-gold-500"></i> طلبات تسجيل الطلاب في الشركات
+                    </h3>
+                    <span id="requests-count-badge" class="bg-navy-900 text-gold-400 text-xs px-3 py-1 rounded-full font-bold">0 طلب</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 text-navy-900 text-xs border-b">
+                                <th class="p-3">اسم الطالب</th>
+                                <th class="p-3">الكود الجامعي</th>
+                                <th class="p-3">الرقم القومي</th>
+                                <th class="p-3">الشركة المختارة</th>
+                                <th class="p-3">تاريخ الطلب</th>
+                                <th class="p-3 text-center">الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-requests-tbody" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Students & Training Records Directory -->
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100 space-y-4">
+                <h3 class="text-lg font-bold text-navy-900 flex items-center gap-2">
+                    <i class="fa-solid fa-address-book text-gold-500"></i> دليل الطلاب وسجلات التدريبات المسجلة
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 text-navy-900 text-xs border-b">
+                                <th class="p-3">اسم الطالب</th>
+                                <th class="p-3">الكود الجامعي</th>
+                                <th class="p-3">الرقم القومي</th>
+                                <th class="p-3">الشركة / موضوع التدريب</th>
+                                <th class="p-3">المدة بالأيام</th>
+                                <th class="p-3">التقييم</th>
+                                <th class="p-3 text-center">إدارة السجل</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-trainings-tbody" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-navy-900 text-white py-6 border-t border-slate-800 text-center text-xs md:text-sm space-y-1">
+        <p class="font-bold">معهد المدينة العالي للهندسة والتكنولوجيا - طريق سقارة السياحى – المريوطية – الهرم – جيزة</p>
+        <p class="text-slate-400">الخط الساخن: <span class="text-gold-400 font-bold">19203</span> | البريد الإلكتروني: <span class="text-gold-400 font-bold">Eng@madinagroups.edu.eg</span></p>
+        <p class="text-slate-500 text-[11px] pt-1">جميع الحقوق محفوظة © 2026 - وحدة التدريب الصيفي والبحث العلمي</p>
+    </footer>
+
+    <!-- JavaScript Application Core with Secure Cloud Firestore -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Firebase Configuration & State
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'madina-eng-training-portal-2026';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSySecurePlaceholderKeyForMadinaInstitute",
+            authDomain: "madina-institute.firebaseapp.com",
+            projectId: "madina-institute-db",
+            storageBucket: "madina-institute.appspot.com",
+            messagingSenderId: "123456789",
+            appId: appId
+        };
+
+        let app, db, auth, userId = null;
+        let appData = {
+            adminPassword: "1234",
+            isAdminLoggedIn: false,
+            logoUrl: "https://placehold.co/70x70/1e3a8a/fbbf24?text=LOGO",
+            companies: [
+                { id: "1", name: "شركة المقاولون العرب (عثمان أحمد عثمان)", field: "الهندسة المدنية والإنشاءات", seats: 35, perks: "تدريب ميداني بمشاريع قومية كبرى + شهادة معتمدة" },
+                { id: "2", name: "شركة فالكون لأنظمة الاتصالات والشبكات", field: "هندسة الإلكترونيات والإتصالات الكهربية", seats: 20, perks: "تدريب عملي على السنترالات وشبكات الفايبر + مكافأة" },
+                { id: "3", name: "موبينيل / أورانج مصر للشبكات", field: "هندسة الحاسبات والتحكم والاتصالات", seats: 25, perks: "معسكر صيفي هندسي + شهادة خبرة" }
+            ],
+            trainings: [],
+            requests: [],
+            announcements: []
+        };
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                userId = auth.currentUser?.uid || crypto.randomUUID();
+                
+                // Start real-time sync with secure cloud collections
+                initCloudSync();
+            } catch (err) {
+                console.error("Cloud connection fallback to local mode:", err);
+            }
+
+            const savedLogo = localStorage.getItem('madina_logo_secure');
+            if (savedLogo) {
+                appData.logoUrl = savedLogo;
+                document.getElementById('institute-logo-img').src = savedLogo;
+            }
+
+            renderCompanies();
+            renderAnnouncements();
+            updateStats();
+        });
+
+        function initCloudSync() {
+            if (!db) return;
+            const publicCol = collection(db, 'artifacts', appId, 'public', 'data', 'institute_records');
+            onSnapshot(publicCol, (snapshot) => {
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data.type === 'companies') appData.companies = data.items || appData.companies;
+                    if (data.type === 'announcements') appData.announcements = data.items || appData.announcements;
+                    if (data.type === 'trainings') appData.trainings = data.items || appData.trainings;
+                    if (data.type === 'requests') appData.requests = data.items || appData.requests;
+                    if (data.type === 'settings') appData.adminPassword = data.adminPassword || appData.adminPassword;
+                });
+                renderCompanies();
+                renderAnnouncements();
+                updateStats();
+                if (document.getElementById('tab-admin') && !document.getElementById('tab-admin').classList.contains('hidden')) {
+                    renderAdminTables();
+                }
+            }, (error) => console.error("Cloud sync error:", error));
+        }
+
+        async function saveCloudData(type) {
+            if (!db || !userId) return;
+            try {
+                let itemsToSave = [];
+                if (type === 'companies') itemsToSave = appData.companies;
+                if (type === 'announcements') itemsToSave = appData.announcements;
+                if (type === 'trainings') itemsToSave = appData.trainings;
+                if (type === 'requests') itemsToSave = appData.requests;
+                if (type === 'settings') {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', `record_${type}`);
+                    await setDoc(docRef, { type: type, adminPassword: appData.adminPassword, updatedBy: userId, timestamp: new Date().toISOString() });
+                    return;
+                }
+
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', `record_${type}`);
+                await setDoc(docRef, { type: type, items: itemsToSave, updatedBy: userId, timestamp: new Date().toISOString() });
+            } catch (e) {
+                console.error("Error saving to cloud:", e);
+            }
+        }
+
+        window.showMsg = function(title, text, isSuccess = true) {
+            document.getElementById('msg-title').innerText = title;
+            document.getElementById('msg-text').innerText = text;
+            const icon = document.getElementById('msg-icon');
+            if (isSuccess) {
+                icon.className = "w-14 h-14 bg-navy-900 text-gold-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-3 shadow";
+                icon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+            } else {
+                icon.className = "w-14 h-14 bg-red-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-3 shadow";
+                icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+            }
+            document.getElementById('msg-modal').classList.remove('hidden');
+        }
+
+        window.closeMsgModal = function() {
+            document.getElementById('msg-modal').classList.add('hidden');
+        }
+
+        window.switchTab = function(tabKey) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if(btn.id !== 'btn-admin-gate') {
+                    btn.classList.remove('bg-gold-500', 'text-navy-900', 'shadow');
+                    btn.classList.add('hover:bg-slate-800', 'text-slate-200');
+                }
+            });
+
+            const targetTab = document.getElementById(`tab-${tabKey}`);
+            if (targetTab) targetTab.classList.remove('hidden');
+
+            const targetBtn = document.getElementById(`btn-${tabKey}`);
+            if (targetBtn && tabKey !== 'admin-gate') {
+                targetBtn.classList.remove('hover:bg-slate-800', 'text-slate-200');
+                targetBtn.classList.add('bg-gold-500', 'text-navy-900', 'shadow');
+            }
+
+            if (tabKey === 'admin') {
+                renderAdminTables();
+            }
+        }
+
+        window.openAdminLoginModal = function() {
+            if (appData.isAdminLoggedIn) {
+                switchTab('admin');
+                return;
+            }
+            document.getElementById('admin-password-input').value = '';
+            document.getElementById('admin-login-error').classList.add('hidden');
+            document.getElementById('admin-login-modal').classList.remove('hidden');
+        }
+
+        window.closeAdminLoginModal = function() {
+            document.getElementById('admin-login-modal').classList.add('hidden');
+        }
+
+        window.handleAdminLogin = function(e) {
+            e.preventDefault();
+            const pass = document.getElementById('admin-password-input').value;
+            if (pass === appData.adminPassword) {
+                appData.isAdminLoggedIn = true;
+                closeAdminLoginModal();
+                document.getElementById('btn-admin').classList.remove('hidden');
+                switchTab('admin');
+                showMsg("تم تسجيل الدخول", "مرحباً بك في لوحة تحكم إدارة التدريب السحابية المؤمنة.");
+            } else {
+                const err = document.getElementById('admin-login-error');
+                err.innerText = "الرقم السري غير صحيح!";
+                err.classList.remove('hidden');
+            }
+        }
+
+        window.adminLogout = function() {
+            appData.isAdminLoggedIn = false;
+            document.getElementById('btn-admin').classList.add('hidden');
+            switchTab('home');
+            showMsg("تسجيل الخروج", "تم خروجك من لوحة التحكم بأمان تام.");
+        }
+
+        window.openChangePasswordModal = function() {
+            document.getElementById('change-pass-modal').classList.remove('hidden');
+        }
+
+        window.closeChangePasswordModal = function() {
+            document.getElementById('change-pass-modal').classList.add('hidden');
+        }
+
+        window.handlePasswordChange = function(e) {
+            e.preventDefault();
+            const newPass = document.getElementById('new-admin-password').value;
+            if (newPass) {
+                appData.adminPassword = newPass;
+                saveCloudData('settings');
+                closeChangePasswordModal();
+                showMsg("تم التحديث", "تم تغيير الرقم السري سحابياً بنجاح.");
+            }
+        }
+
+        window.handleLogoUpload = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    appData.logoUrl = evt.target.result;
+                    document.getElementById('institute-logo-img').src = appData.logoUrl;
+                    localStorage.setItem('madina_logo_secure', appData.logoUrl);
+                    showMsg("تم تحديث الشعار", "تم تغيير شعار المعهد وثباته بنجاح.");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        window.renderCompanies = function() {
+            const query = (document.getElementById('company-search-input')?.value || "").toLowerCase();
+            const grid = document.getElementById('companies-grid');
+            
+            const compSelect = document.getElementById('admin-train-comp');
+            if (compSelect) {
+                compSelect.innerHTML = appData.companies.map(c => `<option value="${c.name}">${c.name} (${c.field})</option>`).join('');
+            }
+
+            if (!grid) return;
+
+            const filtered = appData.companies.filter(c => c.name.toLowerCase().includes(query) || c.field.toLowerCase().includes(query));
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500">لا توجد شركات مطابقة للبحث.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(c => `
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-slate-100 flex flex-col justify-between hover:border-gold-500 transition">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="bg-gold-500/10 text-gold-600 text-xs font-bold px-3 py-1 rounded-full">${c.field}</span>
+                            <span class="text-xs bg-navy-900 text-gold-400 px-2.5 py-1 rounded-lg font-bold">${c.seats} مقعد متاح</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-navy-900 mb-2">${c.name}</h3>
+                        <p class="text-slate-600 text-xs mb-4 leading-relaxed"><i class="fa-solid fa-gift text-gold-500 ml-1"></i> ${c.perks}</p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs text-slate-500">معهد المدينة العالي</span>
+                        <button onclick="openApplyModal('${c.name}')" class="bg-navy-900 hover:bg-navy-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow">
+                            التقديم والطلب <i class="fa-solid fa-arrow-left mr-1"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.openApplyModal = function(compName) {
+            const studentId = prompt("أدخل رقم الهوية (الكود الجامعي) الخاص بك للتقديم في " + compName + ":");
+            if (!studentId) return;
+            const natId = prompt("أدخل الرقم القومي الخاص بك (14 رقم):");
+            if (!natId || natId.length !== 14) {
+                showMsg("خطأ", "يجب إدخال الرقم القومي صحيحاً مكوناً من 14 رقماً.", false);
+                return;
+            }
+            const name = prompt("أدخل اسمك الرباعي الكامل:");
+            if (!name) return;
+
+            const exists = appData.requests.some(r => r.studentId === studentId && r.companyName === compName);
+            if (exists) {
+                showMsg("تنبيه", "لقد قمت بالتقديم لهذه الشركة مسبقاً بالفعل.", false);
+                return;
+            }
+
+            appData.requests.push({
+                id: Date.now().toString(),
+                studentName: name,
+                studentId: studentId,
+                nationalId: natId,
+                companyName: compName,
+                date: new Date().toISOString().split('T')[0]
+            });
+            saveCloudData('requests');
+            showMsg("تم التقديم بنجاح", `تم تسجيل طلبك للتدريب في (${compName}) بنجاح وسيتم مراجعته من لجنة التدريب.`);
+        }
+
+        window.renderAnnouncements = function() {
+            const container = document.getElementById('announcements-container');
+            if (!container) return;
+
+            if (appData.announcements.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500">لا توجد إعلانات حالياً.</div>`;
+                return;
+            }
+
+            container.innerHTML = appData.announcements.map(a => `
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs text-slate-400"><i class="fa-regular fa-calendar ml-1"></i> ${a.date}</span>
+                            <span class="bg-gold-500/10 text-gold-600 text-xs font-bold px-2.5 py-0.5 rounded-full">إعلان رسمي</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-navy-900 mb-2">${a.title}</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">${a.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.handleStudentInquiry = function(e) {
+            e.preventDefault();
+            const sId = document.getElementById('inquiry-id').value.trim();
+            const nId = document.getElementById('inquiry-national-id').value.trim();
+
+            const studentTrainings = appData.trainings.filter(t => t.studentId === sId && t.nationalId === nId);
+            const container = document.getElementById('student-result-container');
+            container.classList.remove('hidden');
+
+            if (studentTrainings.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-2xl shadow-md border border-slate-100 text-center space-y-3">
+                        <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-xl mx-auto">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-navy-900">لا توجد تدريبات مسجلة بهذا الكود والرقم القومي</h3>
+                        <p class="text-xs text-slate-500">تأكد من صحة البيانات المدخلة، أو تواصل مع لجنة التدريب بالمعهد.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const studentName = studentTrainings[0].studentName;
+            const totalDays = studentTrainings.reduce((sum, item) => sum + parseInt(item.daysCount || 0), 0);
+
+            container.innerHTML = `
+                <div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-slate-100 space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center pb-6 border-b border-slate-100 gap-4">
+                        <div>
+                            <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">طالب مسجل ومعتمد</span>
+                            <h3 class="text-2xl font-black text-navy-900 mt-2">${studentName}</h3>
+                            <p class="text-xs text-slate-500 mt-1">الكود الجامعي: ${sId} | الرقم القومي: ${nId}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-center">
+                                <span class="text-xs text-slate-500 block">إجمالي التدريبات</span>
+                                <span class="text-xl font-black text-navy-900">${studentTrainings.length}</span>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-center">
+                                <span class="text-xs text-slate-500 block">إجمالي الأيام التدريبية</span>
+                                <span class="text-xl font-black text-gold-600">${totalDays} يوم</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-navy-900 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-timeline text-gold-500"></i> سجل التدريبات الصيفية (جميع التدريبات المسجلة)
+                        </h4>
+                        <div class="space-y-4">
+                            ${studentTrainings.map((t, idx) => `
+                                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-6 h-6 bg-navy-900 text-gold-400 rounded-full text-xs font-bold flex items-center justify-center">${idx + 1}</span>
+                                            <h5 class="font-bold text-navy-900 text-base">${t.company}</h5>
+                                            <span class="text-xs bg-gold-500/10 text-gold-600 px-2 py-0.5 rounded font-bold">${t.grade}</span>
+                                        </div>
+                                        <p class="text-xs text-slate-600 font-semibold"><i class="fa-solid fa-book ml-1"></i> الموضوع: ${t.topic}</p>
+                                        <p class="text-xs text-slate-500"><i class="fa-regular fa-calendar ml-1"></i> من ${t.startDate} إلى ${t.endDate} (${t.daysCount} يوم)</p>
+                                    </div>
+                                    <div>
+                                        <span class="bg-white border border-slate-300 text-navy-900 text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm">
+                                            معتمد من المعهد
+                                        </span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.generateOfficialLetter = function(event) {
+            event.preventDefault();
+            const name = document.getElementById('letter-name').value;
+            const sId = document.getElementById('letter-student-id').value;
+            const dept = document.getElementById('letter-department').value;
+            const year = document.getElementById('letter-year').value;
+            const academicYear = document.getElementById('letter-academic-year').value;
+            const comp = document.getElementById('letter-company').value;
+            const headName = document.getElementById('letter-head-name').value;
+            const deanName = document.getElementById('letter-dean-name').value;
+
+            document.getElementById('print-institute-logo').src = appData.logoUrl;
+            document.getElementById('print-seal-logo').src = appData.logoUrl;
+
+            document.getElementById('print-student-name').innerText = name;
+            document.getElementById('print-student-code').innerText = sId;
+            document.getElementById('print-student-dept').innerText = dept;
+            document.getElementById('print-student-year').innerText = year;
+            document.getElementById('print-academic-year').innerText = academicYear;
+            document.getElementById('print-academic-year-2').innerText = academicYear;
+            document.getElementById('print-company-name').innerText = comp;
+            document.getElementById('print-head-name').innerText = headName;
+            document.getElementById('print-dean-name').innerText = deanName;
+            document.getElementById('print-current-date').innerText = new Date().toLocaleDateString('ar-EG');
+
+            document.getElementById('letter-preview-container').classList.remove('hidden');
+            document.getElementById('letter-preview-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        window.lookupStudentForAdmin = function() {
+            const sId = document.getElementById('admin-stud-id').value.trim();
+            if (!sId) return;
+
+            const found = appData.trainings.find(t => t.studentId === sId);
+            if (found) {
+                document.getElementById('admin-stud-name').value = found.studentName;
+                document.getElementById('admin-stud-nat-id').value = found.nationalId;
+                showMsg("تعبئة تلقائية", "تم العثور على الطالب في السجلات وجلب بياناته بنجاح لإضافة تدريب جديد.");
+            }
+        }
+
+        window.handleAddNewCompany = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-comp-name').value;
+            const field = document.getElementById('new-comp-field').value;
+            const seats = parseInt(document.getElementById('new-comp-seats').value);
+            const perks = document.getElementById('new-comp-perks').value;
+
+            appData.companies.push({ id: Date.now().toString(), name, field, seats, perks });
+            saveCloudData('companies');
+            renderCompanies();
+            e.target.reset();
+            showMsg("تم الإضافة", "تم إضافة الشركة الجديدة سحابياً لقائمة الشركات المتاحة.");
+        }
+
+        window.handleAddNewTraining = function(e) {
+            e.preventDefault();
+            const sId = document.getElementById('admin-stud-id').value.trim();
+            const nId = document.getElementById('admin-stud-nat-id').value.trim();
+            const name = document.getElementById('admin-stud-name').value.trim();
+            const comp = document.getElementById('admin-train-comp').value.trim();
+            const topic = document.getElementById('admin-train-topic').value.trim();
+            const start = document.getElementById('admin-train-start').value;
+            const end = document.getElementById('admin-train-end').value;
+            const grade = document.getElementById('admin-train-grade').value;
+
+            if (nId.length !== 14) {
+                showMsg("خطأ", "الرقم القومي يجب أن يكون 14 رقماً.", false);
+                return;
+            }
+
+            const duplicate = appData.trainings.some(t => t.studentId === sId && t.topic.trim().toLowerCase() === topic.toLowerCase());
+            if (duplicate) {
+                showMsg("تنبيه تكرار", "هذا الطالب مسجل لديه بالفعل تدريب بنفس عنوان أو موضوع التدريب.", false);
+                return;
+            }
+
+            const d1 = new Date(start);
+            const d2 = new Date(end);
+            const diffTime = Math.abs(d2 - d1);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+
+            appData.trainings.push({
+                id: Date.now().toString(),
+                studentName: name,
+                studentId: sId,
+                nationalId: nId,
+                company: comp,
+                topic: topic,
+                startDate: start,
+                endDate: end,
+                daysCount: diffDays,
+                grade: grade
+            });
+
+            saveCloudData('trainings');
+            renderAdminTables();
+            e.target.reset();
+            showMsg("تم الحفظ بنجاح", "تم إضافة التدريب وسفره إلى قاعدة البيانات السحابية المؤمنة بنجاح.");
+        }
+
+        window.handleAddNewAnnouncement = function(e) {
+            e.preventDefault();
+            const title = document.getElementById('ann-title').value;
+            const desc = document.getElementById('ann-desc').value;
+
+            appData.announcements.unshift({
+                id: Date.now().toString(),
+                title: title,
+                desc: desc,
+                date: new Date().toISOString().split('T')[0]
+            });
+            saveCloudData('announcements');
+            renderAnnouncements();
+            e.target.reset();
+            showMsg("تم النشر", "تم نشر الإعلان الجديد على بوابة الطلاب سحابياً.");
+        }
+
+        window.deleteTraining = function(id) {
+            if (confirm("هل أنت متأكد من حذف هذا السجل التدريبي نهائياً من قاعدة البيانات؟")) {
+                appData.trainings = appData.trainings.filter(t => t.id !== id);
+                saveCloudData('trainings');
+                renderAdminTables();
+            }
+        }
+
+        window.deleteRequest = function(id) {
+            appData.requests = appData.requests.filter(r => r.id !== id);
+            saveCloudData('requests');
+            renderAdminTables();
+        }
+
+        window.updateStats = function() {
+            const scComp = document.getElementById('stat-companies');
+            const scStud = document.getElementById('stat-students');
+            const scTrain = document.getElementById('stat-trainings');
+            const scReq = document.getElementById('stat-requests');
+
+            if (scComp) scComp.innerText = appData.companies.length;
+            const uniqueStudents = new Set(appData.trainings.map(t => t.studentId));
+            if (scStud) scStud.innerText = uniqueStudents.size;
+            if (scTrain) scTrain.innerText = appData.trainings.length;
+            if (scReq) scReq.innerText = appData.requests.length;
+
+            const badge = document.getElementById('requests-count-badge');
+            if (badge) badge.innerText = `${appData.requests.length} طلب`;
+        }
+
+        window.exportDataToExcel = function() {
+            let csv = "\uFEFFاسم الطالب,الكود الجامعي,الرقم القومي,الشركة,موضوع التدريب,من,إلى,الأيام,التقدير\n";
+            appData.trainings.forEach(t => {
+                csv += `"${t.studentName}","${t.studentId}","${t.nationalId}","${t.company}","${t.topic}","${t.startDate}","${t.endDate}",${t.daysCount},"${t.grade}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "Madina_Training_Records.csv";
+            link.click();
+        }
+
+        window.renderAdminTables = function() {
+            updateStats();
+            renderCompanies();
+
+            const reqTbody = document.getElementById('admin-requests-tbody');
+            if (reqTbody) {
+                if (appData.requests.length === 0) {
+                    reqTbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">لا توجد طلبات تقديم مسجلة حالياً.</td></tr>`;
+                } else {
+                    reqTbody.innerHTML = appData.requests.map(r => `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-bold text-navy-900">${r.studentName}</td>
+                            <td class="p-3">${r.studentId}</td>
+                            <td class="p-3">${r.nationalId}</td>
+                            <td class="p-3">${r.companyName}</td>
+                            <td class="p-3">${r.date}</td>
+                            <td class="p-3 text-center">
+                                <button onclick="deleteRequest('${r.id}')" class="bg-red-100 text-red-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-red-200">حذف الطلب</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            }
+
+            const trainTbody = document.getElementById('admin-trainings-tbody');
+            if (trainTbody) {
+                if (appData.trainings.length === 0) {
+                    trainTbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">لا توجد سجلات تدريبية حالياً.</td></tr>`;
+                } else {
+                    trainTbody.innerHTML = appData.trainings.map(t => `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-bold text-navy-900">${t.studentName}</td>
+                            <td class="p-3">${t.studentId}</td>
+                            <td class="p-3">${t.nationalId}</td>
+                            <td class="p-3">${t.company} <br><span class="text-xs text-slate-400">${t.topic}</span></td>
+                            <td class="p-3">${t.daysCount} يوم</td>
+                            <td class="p-3"><span class="bg-gold-500/10 text-gold-600 px-2.5 py-1 rounded-full text-xs font-bold">${t.grade}</span></td>
+                            <td class="p-3 text-center">
+                                <button onclick="deleteTraining('${t.id}')" class="bg-red-100 text-red-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-red-200">حذف التدريب</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            }
+        }
+    </script>
 </body>
 </html>
